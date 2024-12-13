@@ -21,15 +21,11 @@ object GridSpec extends weaver.FunSuite {
     .setAt(x = 2, y = 3, cell = 12)
 
   test("cellAt returns 123") {
-    val grid = intGrid() /*.clone()*/.setAt(2, 3, 123)
-
-    expect.eql(123, grid.cellAt(2, 3))
+    expect.eql(123, intGrid().setAt(2, 3, 123).cellAt(2, 3))
   }
 
   test("getCellAt returns Some(123)") {
-    val grid = intGrid() /*.clone()*/.setAt(2, 3, 123)
-
-    expect.eql(Some(123), grid.getCellAt(2, 3))
+    expect.eql(Some(123), intGrid().setAt(2, 3, 123).getCellAt(2, 3))
   }
 
   test("getCellAt returns None for invalid coords") {
@@ -37,8 +33,6 @@ object GridSpec extends weaver.FunSuite {
   }
 
   test("map applies supplied function to all elements") {
-    val doubledGrid: Grid[Int] = intGrid() /*.clone()*/.map(_ * 2)
-
     val expectedGrid: Grid[Int] = emptyIntGrid()
       .setAt(x = 0, y = 0, cell = 2)
       .setAt(x = 1, y = 0, cell = 4)
@@ -53,11 +47,10 @@ object GridSpec extends weaver.FunSuite {
       .setAt(x = 1, y = 3, cell = 22)
       .setAt(x = 2, y = 3, cell = 24)
 
-    expect.eql(expectedGrid, doubledGrid)
+    expect.eql(expectedGrid, intGrid().map(_ * 2))
   }
 
   test("zipWithIndex adds grid coordinates to all elements") {
-
     val expectedGrid: Grid[(Int, (Int, Int))] = Grid
       .of(width = 3, height = 4, empty = (0, -1 -> -1))
       .setAt(x = 0, y = 0, cell = (1, 0 -> 0))
@@ -77,67 +70,34 @@ object GridSpec extends weaver.FunSuite {
   }
 
   test("slice") {
-    val sliced: Array[Array[Int]] = intGrid().slice(xFrom = 1, xTo = 2, yFrom = 1, yTo = 2)
-
     val expected: Array[Array[Int]] = Array(
       Array(5, 6),
       Array(8, 9)
     )
 
-    expect.same(expected, sliced)
+    expect.eql(expected, intGrid().slice(xFrom = 1, xTo = 2, yFrom = 1, yTo = 2))
   }
 
   test("neighbours") {
-    val neighbours: Array[Array[Int]] = intGrid().neighbours(1, 1)
-
     val expected: Array[Array[Int]] = Array(
       Array(1, 2, 3),
       Array(4, 6),
       Array(7, 8, 9)
     )
 
-    expect.same(expected, neighbours)
+    expect.eql(expected, intGrid().neighbours(1, 1))
   }
 
-  List[(Int, Int)](
-    0 -> 3,
-    1 -> 0,
-    2 -> 1,
-    3 -> 2
-  ).foreach((x, expected) =>
-    test(s"upper of $x should be $expected") {
-      expect.same(expected, Grid.upper(emptyGrid)(x))
-    }
-  )
-
-  List[(Int, Int)](
-    0 -> 1,
-    1 -> 2,
-    2 -> 3,
-    3 -> 0
-  ).foreach((x, expected) =>
-    test(s"lower of $x should be $expected") {
-      expect.same(expected, Grid.lower(emptyGrid)(x))
-    }
-  )
-
-  List[(Int, Int)](
-    0 -> 2,
-    1 -> 0,
-    2 -> 1
-  ).foreach((x, expected) =>
-    test(s"left of $x should be $expected") {
-      expect.same(expected, Grid.left(emptyGrid)(x))
-    }
-  )
-
-  List[(Int, Int)](
-    0 -> 1,
-    1 -> 2,
-    2 -> 0
-  ).foreach((x, expected) =>
-    test(s"right of $x should be $expected") {
-      expect.same(expected, Grid.right(emptyGrid)(x))
-    }
+  List[(String, Grid[Int] => Int => Int, List[(Int, Int)])](
+    ("upper", Grid.upper, List(0 -> 3, 1 -> 0, 2 -> 1, 3 -> 2)),
+    ("lower", Grid.lower, List(0 -> 1, 1 -> 2, 2 -> 3, 3 -> 0)),
+    ("left", Grid.left, List(0 -> 2, 1 -> 0, 2 -> 1)),
+    ("right", Grid.right, List(0 -> 1, 1 -> 2, 2 -> 0))
+  ).foreach((opName, op, scenarios) =>
+    scenarios.foreach((x, expected) =>
+      test(s"$opName of $x should be $expected") {
+        expect.same(expected, op(emptyGrid)(x))
+      }
+    )
   )
 }
