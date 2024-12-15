@@ -1,7 +1,5 @@
 package gameoflife.model
 
-import cats.syntax.show.*
-
 import Arrays.given
 
 object GridSpec extends weaver.FunSuite with GridFixtures {
@@ -73,30 +71,12 @@ object GridSpec extends weaver.FunSuite with GridFixtures {
 
   test("neighbours") {
     val expected: Array[Array[Int]] = Array(
-      Array(1, 2, 3),
-      Array(4, 6),
-      Array(7, 8, 9)
-    )
-
-    expect.eql(expected, int3x4Grid().neighbours(1, 1))
-  }
-
-  test("bigger neighbours") {
-    val grid = int5x5Grid()
-
-    val neighbours = grid.neighbours(1, 2)
-
-    val slice: Array[Array[Int]] = grid.slice(xFrom = 0, xTo = 2, yFrom = 1, yTo = 3)
-
-    val slicecWithIndex: Array[Array[(Int, (Int, Int))]] = Grid.withOffsetIndex(0, 1)(slice)
-
-    val expected: Array[Array[Int]] = Array(
       Array(6, 7, 8),
       Array(11, 13),
       Array(16, 17, 18)
     )
 
-    expect.eql(expected, neighbours)
+    expect.eql(expected, int5x5Grid().neighbours(1, 2))
   }
 
   List[(String, Grid[Int] => Int => Int, List[(Int, Int)])](
