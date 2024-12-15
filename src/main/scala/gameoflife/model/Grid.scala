@@ -78,13 +78,13 @@ object Grid {
   import Arrays.given
   import Eqs.*
 
-  given gridEq[A: Eq]: Eq[Grid[A]] =
+  given[A: Eq]: Eq[Grid[A]] =
     Eq.all(
       Eq.by(_.height),
       Eq.by(_.width),
       Eq.by(_.cells)
     )
 
-  given gridShow[A: Show]: Show[Grid[A]] =
+  given [A: Show]: Show[Grid[A]] =
     Show.show(_.cells.show)
 }
