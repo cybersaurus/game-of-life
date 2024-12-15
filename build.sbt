@@ -14,3 +14,8 @@ libraryDependencies ++= Seq(
 )
 
 testFrameworks += new TestFramework("weaver.framework.CatsEffect")
+
+addCommandAlias(
+  name = "validate",
+  value = "scalafmtCheckAll; clean; compile; test"
+)
