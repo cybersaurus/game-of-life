@@ -67,11 +67,10 @@ object Grid {
   ): Array[Array[(A, (Int, Int))]] =
     subcells.zipWithIndex
       .map((row, y) => row.zipWithIndex.map { (cell, x) => (cell, (x + xOffset) -> (y + yOffset)) })
-  
+
   private def stripIndex[A: ClassTag](cellsWithIndex: Array[Array[(A, (Int, Int))]]): Array[Array[A]] =
     cellsWithIndex.map(row => row.map((cell, _) => cell))
-    
-    
+
   import cats.syntax.show.*
   import cats.Eq
   import cats.Show
