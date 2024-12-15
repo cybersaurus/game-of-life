@@ -1,53 +1,27 @@
 package gameoflife.model
 
+import cats.syntax.show.*
+
 import Arrays.given
 
-object GridSpec extends weaver.FunSuite {
-  private val emptyGrid: Grid[Int] = emptyIntGrid()
-  private def emptyIntGrid(): Grid[Int] = Grid.of(width = 3, height = 4, empty = 0)
-
-  private def intGrid(): Grid[Int] = emptyIntGrid()
-    .setAt(x = 0, y = 0, cell = 1)
-    .setAt(x = 1, y = 0, cell = 2)
-    .setAt(x = 2, y = 0, cell = 3)
-    .setAt(x = 0, y = 1, cell = 4)
-    .setAt(x = 1, y = 1, cell = 5)
-    .setAt(x = 2, y = 1, cell = 6)
-    .setAt(x = 0, y = 2, cell = 7)
-    .setAt(x = 1, y = 2, cell = 8)
-    .setAt(x = 2, y = 2, cell = 9)
-    .setAt(x = 0, y = 3, cell = 10)
-    .setAt(x = 1, y = 3, cell = 11)
-    .setAt(x = 2, y = 3, cell = 12)
+object GridSpec extends weaver.FunSuite with GridFixtures {
 
   test("cellAt returns 123") {
-    expect.eql(123, intGrid().setAt(2, 3, 123).cellAt(2, 3))
+    expect.eql(123, int3x4Grid().setAt(2, 3, 123).cellAt(2, 3))
   }
 
   test("getCellAt returns Some(123)") {
-    expect.eql(Some(123), intGrid().setAt(2, 3, 123).getCellAt(2, 3))
+    expect.eql(Some(123), int3x4Grid().setAt(2, 3, 123).getCellAt(2, 3))
   }
 
   test("getCellAt returns None for invalid coords") {
-    expect.eql(None, intGrid().getCellAt(100, 100))
+    expect.eql(None, int3x4Grid().getCellAt(100, 100))
   }
 
   test("map applies supplied function to all elements") {
-    val expectedGrid: Grid[Int] = emptyIntGrid()
-      .setAt(x = 0, y = 0, cell = 2)
-      .setAt(x = 1, y = 0, cell = 4)
-      .setAt(x = 2, y = 0, cell = 6)
-      .setAt(x = 0, y = 1, cell = 8)
-      .setAt(x = 1, y = 1, cell = 10)
-      .setAt(x = 2, y = 1, cell = 12)
-      .setAt(x = 0, y = 2, cell = 14)
-      .setAt(x = 1, y = 2, cell = 16)
-      .setAt(x = 2, y = 2, cell = 18)
-      .setAt(x = 0, y = 3, cell = 20)
-      .setAt(x = 1, y = 3, cell = 22)
-      .setAt(x = 2, y = 3, cell = 24)
+    val expectedGrid: Grid[Int] = increasingGrid(width = 3, height = 4, inc = 2)
 
-    expect.eql(expectedGrid, intGrid().map(_ * 2))
+    expect.eql(expectedGrid, int3x4Grid().map(_ * 2))
   }
 
   test("zipWithIndex adds grid coordinates to all elements") {
@@ -66,7 +40,26 @@ object GridSpec extends weaver.FunSuite {
       .setAt(x = 1, y = 3, cell = (11, 1 -> 3))
       .setAt(x = 2, y = 3, cell = (12, 2 -> 3))
 
-    expect.eql(expectedGrid, intGrid().zipWithIndex)
+    expect.eql(expectedGrid, int3x4Grid().zipWithIndex)
+  }
+
+  test("withOffsetIndex") {
+    val expectedGrid: Grid[(Int, (Int, Int))] = Grid
+      .of(width = 3, height = 4, empty = (0, -1 -> -1))
+      .setAt(x = 0, y = 0, cell = (1, 10 -> 20))
+      .setAt(x = 1, y = 0, cell = (2, 11 -> 20))
+      .setAt(x = 2, y = 0, cell = (3, 12 -> 20))
+      .setAt(x = 0, y = 1, cell = (4, 10 -> 21))
+      .setAt(x = 1, y = 1, cell = (5, 11 -> 21))
+      .setAt(x = 2, y = 1, cell = (6, 12 -> 21))
+      .setAt(x = 0, y = 2, cell = (7, 10 -> 22))
+      .setAt(x = 1, y = 2, cell = (8, 11 -> 22))
+      .setAt(x = 2, y = 2, cell = (9, 12 -> 22))
+      .setAt(x = 0, y = 3, cell = (10, 10 -> 23))
+      .setAt(x = 1, y = 3, cell = (11, 11 -> 23))
+      .setAt(x = 2, y = 3, cell = (12, 12 -> 23))
+
+    expect.eql(expectedGrid.cells, Grid.withOffsetIndex(10, 20)(int3x4Grid().cells))
   }
 
   test("slice") {
@@ -75,7 +68,7 @@ object GridSpec extends weaver.FunSuite {
       Array(8, 9)
     )
 
-    expect.eql(expected, intGrid().slice(xFrom = 1, xTo = 2, yFrom = 1, yTo = 2))
+    expect.eql(expected, int3x4Grid().slice(xFrom = 1, xTo = 2, yFrom = 1, yTo = 2))
   }
 
   test("neighbours") {
@@ -85,7 +78,25 @@ object GridSpec extends weaver.FunSuite {
       Array(7, 8, 9)
     )
 
-    expect.eql(expected, intGrid().neighbours(1, 1))
+    expect.eql(expected, int3x4Grid().neighbours(1, 1))
+  }
+
+  test("bigger neighbours") {
+    val grid = int5x5Grid()
+
+    val neighbours = grid.neighbours(1, 2)
+
+    val slice: Array[Array[Int]] = grid.slice(xFrom = 0, xTo = 2, yFrom = 1, yTo = 3)
+
+    val slicecWithIndex: Array[Array[(Int, (Int, Int))]] = Grid.withOffsetIndex(0, 1)(slice)
+
+    val expected: Array[Array[Int]] = Array(
+      Array(6, 7, 8),
+      Array(11, 13),
+      Array(16, 17, 18)
+    )
+
+    expect.eql(expected, neighbours)
   }
 
   List[(String, Grid[Int] => Int => Int, List[(Int, Int)])](

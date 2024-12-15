@@ -24,7 +24,7 @@ final case class Grid[A: ClassTag] private (cells: Array[Array[A]]) {
       .pipe(Grid.apply)
 
   def zipWithIndex: Grid[(A, (Int, Int))] =
-    cellsWithIndex(cells) pipe Grid.apply
+    Grid.withOffsetIndex(xOffset = 0, yOffset = 0)(cells).pipe(Grid.apply)
 
   def reduce(
       reduceCellsToRow: (A, A) => A,
@@ -37,9 +37,9 @@ final case class Grid[A: ClassTag] private (cells: Array[Array[A]]) {
   def neighbours(x: Int, y: Int): Array[Array[A]] =
     // TODO: Fix slice() when x/y wrap off grid edge
     slice(left(x), right(x), upper(y), lower(y))
-      .pipe(cellsWithIndex)
+      .pipe(Grid.withOffsetIndex(left(x), upper(y)))
       .map(row => row.filterNot { case (cell, (cx, cy)) => (cx, cy) == (x, y) })
-      .pipe(stripIndex)
+      .pipe(Grid.stripIndex)
 
   private def upper(y: Int): Int = Grid.upper(this)(y)
   private def lower(y: Int): Int = Grid.lower(this)(y)
@@ -48,13 +48,6 @@ final case class Grid[A: ClassTag] private (cells: Array[Array[A]]) {
 
   private[model] def slice(xFrom: Int, xTo: Int, yFrom: Int, yTo: Int): Array[Array[A]] =
     cells.slice(yFrom, yTo + 1).map(_.slice(xFrom, xTo + 1))
-
-  private def cellsWithIndex(subcells: Array[Array[A]]): Array[Array[(A, (Int, Int))]] =
-    subcells.zipWithIndex
-      .map((row, y) => row.zipWithIndex.map { (cell, x) => (cell, x -> y) })
-
-  private def stripIndex(cellsWithIndex: Array[Array[(A, (Int, Int))]]): Array[Array[A]] =
-    cellsWithIndex.map(row => row.map((cell, _) => cell))
 }
 
 object Grid {
@@ -69,6 +62,16 @@ object Grid {
   private[model] def left[A](grid: Grid[A])(x: Int): Int = if x > 0 then x - 1 else grid.cells(0).length - 1
   private[model] def right[A](grid: Grid[A])(x: Int): Int = if x < grid.cells(0).length - 1 then x + 1 else 0
 
+  private[model] def withOffsetIndex[A](xOffset: Int, yOffset: Int)(
+      subcells: Array[Array[A]]
+  ): Array[Array[(A, (Int, Int))]] =
+    subcells.zipWithIndex
+      .map((row, y) => row.zipWithIndex.map { (cell, x) => (cell, (x + xOffset) -> (y + yOffset)) })
+  
+  private def stripIndex[A: ClassTag](cellsWithIndex: Array[Array[(A, (Int, Int))]]): Array[Array[A]] =
+    cellsWithIndex.map(row => row.map((cell, _) => cell))
+    
+    
   import cats.syntax.show.*
   import cats.Eq
   import cats.Show
