@@ -78,7 +78,7 @@ object Grid {
   import Arrays.given
   import Eqs.*
 
-  given[A: Eq]: Eq[Grid[A]] =
+  given [A: Eq]: Eq[Grid[A]] =
     Eq.all(
       Eq.by(_.height),
       Eq.by(_.width),
@@ -87,4 +87,11 @@ object Grid {
 
   given [A: Show]: Show[Grid[A]] =
     Show.show(_.cells.show)
+
+  extension [A: Show](grid: Grid[A]) {
+    def debug(prefix: String) = {
+      println(s"$prefix: [${grid.show}]")
+      grid
+    }
+  }
 }

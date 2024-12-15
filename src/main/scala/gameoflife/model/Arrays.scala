@@ -14,4 +14,11 @@ object Arrays {
     )
 
   given arrayShow[A: Show]: Show[Array[A]] = Show.show(arr => arr.map(_.show).mkString(","))
+
+  extension [A: Show](twoDimArray: Array[Array[A]]) {
+    def debug(prefix: String): Array[Array[A]] = {
+      println(s"$prefix: [${twoDimArray.show}]")
+      twoDimArray
+    }
+  }
 }
