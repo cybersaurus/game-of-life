@@ -7,5 +7,7 @@ enum Cell {
   case Empty, Alive
 }
 
-given Eq[Cell] = Eq.fromUniversalEquals
-given Show[Cell] = Show.fromToString
+object Cell {
+  given Eq[Cell] = Eq.fromUniversalEquals
+  given Show[Cell] = Show.fromToString
+}
