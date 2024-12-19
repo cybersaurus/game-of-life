@@ -38,7 +38,7 @@ object ArraysSpec extends weaver.FunSuite with GridFixtures {
     val expected: Array[Array[Int]] = Array(
       Array(7, 8, 9),
       Array(1, 2, 3),
-      Array(4, 5, 6),
+      Array(4, 5, 6)
     )
 
     expect.eql(expected, int3x3Grid().cells.rotateRowsDown)

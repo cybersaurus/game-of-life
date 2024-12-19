@@ -21,13 +21,14 @@ object GridOfCells {
       .map { case (cell, (x, y)) =>
         grid.zipWithIndex
           .neighbours(x, y)
+//          .debug(s">>>>> neighbours ($x,$y)")
           .flatten
-          .count { case (cell, (nx, ny)) => cell == Alive }
+          .count { case (cell, (_, _)) => cell == Alive }
           .pipe { count =>
             cell match {
               case Alive if Set(2, 3).contains(count) => Alive
               case Empty if Set(3).contains(count)    => Alive
-              case state                              => Empty
+              case _                                  => Empty
             }
           }
       }
