@@ -69,26 +69,63 @@ object GridSpec extends weaver.FunSuite with GridFixtures {
     expect.eql(expected, int3x4Grid().slice(xFrom = 1, xTo = 2, yFrom = 1, yTo = 2))
   }
 
-  test("neighbours") {
+  test("neighbours of middle/middle cell on 3x3 grid") {
     val expected: Array[Array[Int]] = Array(
-      Array(6, 7, 8),
-      Array(11, 13),
-      Array(16, 17, 18)
+      Array(1, 2, 3),
+      Array(4, 6),
+      Array(7, 8, 9)
     )
 
-    expect.eql(expected, int5x5Grid().neighbours(1, 2))
+    expect.eql(expected, int3x3Grid().neighbours(1, 1))
   }
 
-  List[(String, Grid[Int] => Int => Int, List[(Int, Int)])](
-    ("upper", Grid.upper, List(0 -> 3, 1 -> 0, 2 -> 1, 3 -> 2)),
-    ("lower", Grid.lower, List(0 -> 1, 1 -> 2, 2 -> 3, 3 -> 0)),
-    ("left", Grid.left, List(0 -> 2, 1 -> 0, 2 -> 1)),
-    ("right", Grid.right, List(0 -> 1, 1 -> 2, 2 -> 0))
-  ).foreach((opName, op, scenarios) =>
-    scenarios.foreach((x, expected) =>
-      test(s"$opName of $x should be $expected") {
-        expect.same(expected, op(emptyGrid)(x))
-      }
+  test("neighbours of middle/bottom cell on 3x3 grid") {
+    val expected: Array[Array[Int]] = Array(
+      Array(4, 5, 6),
+      Array(7, 9),
+      Array(1, 2, 3)
     )
-  )
+
+    expect.eql(expected, int3x3Grid().neighbours(1, 2))
+  }
+
+  test("neighbours of middle/top cell on 3x3 grid") {
+    val expected: Array[Array[Int]] = Array(
+      Array(7, 8, 9),
+      Array(1, 3),
+      Array(4, 5, 6)
+    )
+
+    expect.eql(expected, int3x3Grid().neighbours(1, 0))
+  }
+
+  test("neighbours of left/top cell on 3x3 grid") {
+    val expected: Array[Array[Int]] = Array(
+      Array(9, 7, 8),
+      Array(3, 2),
+      Array(6, 4, 5)
+    )
+
+    expect.eql(expected, int3x3Grid().neighbours(0, 0))
+  }
+
+  test("neighbours of right/bottom cell on 3x3 grid") {
+    val expected: Array[Array[Int]] = Array(
+      Array(5, 6, 4),
+      Array(8, 7),
+      Array(2, 3, 1)
+    )
+
+    expect.eql(expected, int3x3Grid().neighbours(2, 2))
+  }
+
+  test("neighbours of middle/middle cell on 5x5 grid") {
+    val expected: Array[Array[Int]] = Array(
+      Array(7, 8, 9),
+      Array(12, 14),
+      Array(17, 18, 19)
+    )
+
+    expect.eql(expected, int5x5Grid().neighbours(2, 2))
+  }
 }

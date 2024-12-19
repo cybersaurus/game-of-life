@@ -34,17 +34,26 @@ final case class Grid[A: ClassTag] private (cells: Array[Array[A]]) {
       .map(row => row.reduce(reduceCellsToRow))
       .reduce(reduceRowsToResult)
 
-  def neighbours(x: Int, y: Int): Array[Array[A]] =
-    // TODO: Fix slice() when x/y wrap off grid edge
-    slice(left(x), right(x), upper(y), lower(y))
-      .pipe(Grid.withOffsetIndex(left(x), upper(y)))
-      .map(row => row.filterNot { case (cell, (cx, cy)) => (cx, cy) == (x, y) })
-      .pipe(Grid.stripIndex)
+  def neighbours(x: Int, y: Int): Array[Array[A]] = {
+    def rowsAround(y: Int): Array[Array[A]] =
+      y match {
+        case y if y == 0          => Array(cells(height - 1), cells(y), cells(y + 1))
+        case y if y == height - 1 => Array(cells(y - 1), cells(y), cells(0))
+        case y                    => cells.slice(y - 1, y + 2)
+      }
 
-  private def upper(y: Int): Int = Grid.upper(this)(y)
-  private def lower(y: Int): Int = Grid.lower(this)(y)
-  private def left(x: Int): Int = Grid.left(this)(x)
-  private def right(x: Int): Int = Grid.right(this)(x)
+    def columnsAround(x: Int)(rows: Array[Array[A]]): Array[Array[A]] =
+      x match {
+        case x if x == 0         => rows.map(row => Array(row(width - 1), row(x), row(x + 1)))
+        case x if x == width - 1 => rows.map(row => Array(row(x - 1), row(x), row(0)))
+        case x                   => rows.map(_.slice(x - 1, x + 2))
+      }
+
+    (rowsAround andThen columnsAround(x))(y)
+      .pipe(Grid.withOffsetIndex(0, 0))
+      .map(row => row.filterNot { case (cell, (cx, cy)) => (cx, cy) == (1, 1) })
+      .pipe(Grid.stripIndex)
+  }
 
   private[model] def slice(xFrom: Int, xTo: Int, yFrom: Int, yTo: Int): Array[Array[A]] =
     cells.slice(yFrom, yTo + 1).map(_.slice(xFrom, xTo + 1))
@@ -56,11 +65,6 @@ object Grid {
     Array
       .fill(height, width)(empty)
       .pipe(Grid.apply)
-
-  private[model] def upper[A](grid: Grid[A])(y: Int): Int = if y > 0 then y - 1 else grid.cells.length - 1
-  private[model] def lower[A](grid: Grid[A])(y: Int): Int = if y < grid.cells.length - 1 then y + 1 else 0
-  private[model] def left[A](grid: Grid[A])(x: Int): Int = if x > 0 then x - 1 else grid.cells(0).length - 1
-  private[model] def right[A](grid: Grid[A])(x: Int): Int = if x < grid.cells(0).length - 1 then x + 1 else 0
 
   private[model] def withOffsetIndex[A](xOffset: Int, yOffset: Int)(
       subcells: Array[Array[A]]
