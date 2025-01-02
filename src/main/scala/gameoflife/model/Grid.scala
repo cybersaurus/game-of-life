@@ -49,10 +49,12 @@ final case class Grid[A: ClassTag] private (cells: Array[Array[A]]) {
         case x                   => rows.map(_.slice(x - 1, x + 2))
       }
 
+    def collectCellsExceptMiddle(row: Array[(A, (Int, Int))]): Array[A] =
+      row.collect { case (cell, (cx, cy)) if (cx, cy) != (1, 1) => cell }
+
     (rowsAround andThen columnsAround(x))(y)
       .pipe(Grid.withOffsetIndex(0, 0))
-      .map(row => row.filterNot { case (cell, (cx, cy)) => (cx, cy) == (1, 1) })
-      .pipe(Grid.stripIndex)
+      .map(collectCellsExceptMiddle)
   }
 
   private[model] def slice(xFrom: Int, xTo: Int, yFrom: Int, yTo: Int): Array[Array[A]] =
@@ -72,10 +74,7 @@ object Grid {
     subcells.zipWithIndex
       .map((row, y) => row.zipWithIndex.map { (cell, x) => (cell, (x + xOffset) -> (y + yOffset)) })
 
-  private def stripIndex[A: ClassTag](cellsWithIndex: Array[Array[(A, (Int, Int))]]): Array[Array[A]] =
-    cellsWithIndex.map(row => row.map((cell, _) => cell))
-
-  import cats.syntax.show.*
+  import cats.syntax.show.toShow
   import cats.Eq
   import cats.Show
 
