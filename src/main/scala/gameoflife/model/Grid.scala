@@ -8,15 +8,28 @@ final case class Grid[A: ClassTag] private (cells: Array[Array[A]]) {
   val height: Int = cells.length
   val width: Int = cells(0).length
 
-  override def clone(): Grid[A] =
-    cells.clone().map(row => row.clone()).pipe(Grid.apply)
+  override def clone(): Grid[A] = cells.clone().map(row => row.clone()).pipe(Grid.apply)
 
-  def getCellAt(x: Int, y: Int): Option[A] = scala.util.Try(cellAt(x, y)).toOption
+  def combine(otherGrid: Grid[A], default: A, atX: Int = 0, atY: Int = 0): Grid[A] =
+    Grid.of(
+      width = math.max(width, otherGrid.width),
+      height = math.max(height, otherGrid.height),
+      default
+    ) { (x, y) =>
+      (this.getCellAt(x, y), otherGrid.getCellAt(x - atX, y - atY)) match {
+        case (None, Some(otherCell))       => otherCell
+        case (Some(cell), None)            => cell
+        case (Some(cell), Some(otherCell)) => if otherCell == default then cell else otherCell
+        case (None, None)                  => default
+      }
+    }
 
-  def cellAt(x: Int, y: Int): A = cells(y)(x)
+  def getCellAt(x: Int, y: Int): Option[A] = Option.when(isDefined(x, y))(cellAt(x, y))
 
-  def setAt(x: Int, y: Int, cell: A): Grid[A] =
-    this.tap(_ => cells(y).update(x, cell))
+  private def cellAt(x: Int, y: Int): A = cells(y)(x)
+
+  private def isDefined(x: Int, y: Int): Boolean =
+    x >= 0 && y >= 0 && cells.length > y && cells(0).length > x
 
   def map[B: ClassTag](f: A => B): Grid[B] =
     cells
@@ -24,7 +37,9 @@ final case class Grid[A: ClassTag] private (cells: Array[Array[A]]) {
       .pipe(Grid.apply)
 
   def zipWithIndex: Grid[(A, (Int, Int))] =
-    Grid.withOffsetIndex(xOffset = 0, yOffset = 0)(cells).pipe(Grid.apply)
+    Grid
+      .withOffsetIndex(xOffset = 0, yOffset = 0)(cells)
+      .pipe(Grid.apply)
 
   def reduce(
       reduceCellsToRow: (A, A) => A,
@@ -63,6 +78,9 @@ final case class Grid[A: ClassTag] private (cells: Array[Array[A]]) {
 
 object Grid {
 
+  def empty[A: ClassTag](width: Int, height: Int, empty: => A) =
+    Grid.of(width, height, empty)(PartialFunction.empty)
+
   def of[A: ClassTag](width: Int, height: Int, default: => A)(insertAtCoords: PartialFunction[(Int, Int), A]) =
     Array
       .tabulate(height, width)((y, x) => insertAtCoords.applyOrElse((x, y), (_, _) => default))
@@ -91,10 +109,6 @@ object Grid {
   given [A: Show]: Show[Grid[A]] =
     Show.show(_.cells.show)
 
-  extension [A: Show](grid: Grid[A]) {
-    def debug(prefix: String) = {
-      println(s"$prefix: [${grid.show}]")
-      grid
-    }
-  }
+  extension [A: Show](grid: Grid[A])
+    def debug(prefix: String): Grid[A] = grid.tap(_ => println(s"$prefix: [${grid.show}]"))
 }

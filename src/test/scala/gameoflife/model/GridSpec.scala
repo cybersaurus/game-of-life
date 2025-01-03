@@ -1,19 +1,13 @@
 package gameoflife.model
 
-import Arrays.given
-
 object GridSpec extends weaver.FunSuite with GridFixtures {
 
-  test("cellAt returns 123") {
-    expect.eql(123, int3x4Grid().setAt(2, 3, 123).cellAt(2, 3))
-  }
-
   test("getCellAt returns Some(123)") {
-    expect.eql(Some(123), int3x4Grid().setAt(2, 3, 123).getCellAt(2, 3))
+    expect.eql(Some(123), emptyInt3x4Grid { case (2, 3) => 123 }.getCellAt(2, 3))
   }
 
   test("getCellAt returns None for invalid coords") {
-    expect.eql(None, int3x4Grid().getCellAt(100, 100))
+    expect.eql(None, emptyInt3x4Grid().getCellAt(100, 100))
   }
 
   test("map applies supplied function to all elements") {
@@ -129,5 +123,50 @@ object GridSpec extends weaver.FunSuite with GridFixtures {
     )
 
     expect.eql(expected, int5x5Grid().neighbours(2, 2))
+  }
+
+  test("combine two empty grids") {
+    val empty2x5: Grid[Int] = Grid.of(width = 2, height = 5, default = 0)(PartialFunction.empty)
+    val empty4x3: Grid[Int] = Grid.of(width = 4, height = 3, default = 0)(PartialFunction.empty)
+
+    val expected: Grid[Int] = Grid.of(width = 4, height = 5, default = 0)(PartialFunction.empty)
+
+    expect.eql(expected, empty2x5.combine(empty4x3, default = 0)) &&
+    expect.eql(expected, empty4x3.combine(empty2x5, default = 0))
+  }
+
+  test("combine empty grid with shape") {
+    val empty10x10: Grid[Int] = Grid.of(width = 10, height = 10, default = 0)(PartialFunction.empty)
+
+    val shape: Grid[Int] = Grid.of(width = 5, height = 5, default = 0) {
+      case (1, 2) => 10
+      case (2, 2) => 20
+      case (3, 2) => 30
+    }
+    val expected = Grid.of(width = 10, height = 10, default = 0) {
+      case (1, 2) => 10
+      case (2, 2) => 20
+      case (3, 2) => 30
+    }
+
+    expect.eql(expected, empty10x10.combine(shape, default = 0)) &&
+    expect.eql(expected, shape.combine(empty10x10, default = 0))
+  }
+
+  test("combine empty grid with offset shape".only) {
+    val empty10x10: Grid[Int] = Grid.of(width = 10, height = 10, default = 0)(PartialFunction.empty)
+
+    val shape: Grid[Int] = Grid.of(width = 3, height = 3, default = 0) {
+      case (0, 1) => 10
+      case (1, 1) => 20
+      case (2, 1) => 30
+    }
+    val expected = Grid.of(width = 10, height = 10, default = 0) {
+      case (4, 6) => 10
+      case (5, 6) => 20
+      case (6, 6) => 30
+    }
+
+    expect.eql(expected, empty10x10.combine(shape, default = 0, atX = 4, atY = 5))
   }
 }

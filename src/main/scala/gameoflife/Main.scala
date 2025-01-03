@@ -23,7 +23,11 @@ object Main extends cats.effect.IOApp.Simple {
   private val gridToImage: (Grid[Cell], Int) => Image = (grid, generation) =>
     grid.map(chooseSquare).reduce(_ beside _, _ above _) above Image.text(s"Generation: $generation")
 
-  private val initial: (Grid[Cell], Int) = Shapes.hBlinker5x5 -> 1
+  private val initial: Grid[Cell] =
+    Grid
+      .empty(width = 25, height = 25, empty = Cell.Empty)
+      .combine(Shapes.hBlinker, default = Cell.Empty, atX = 1, atY = 1)
+      .combine(Shapes.hBlinker, default = Cell.Empty, atX = 15, atY = 15)
 
   private val nextGrid: (Grid[Cell], Int) => (Grid[Cell], Int) = (grid, generation) =>
 //    import cats.syntax.show.*
@@ -35,7 +39,7 @@ object Main extends cats.effect.IOApp.Simple {
 
   override def run: IO[Unit] =
     fs2.Stream
-      .iterate[IO, (Grid[Cell], Int)](initial)(nextGrid.tupled)
+      .iterate[IO, (Grid[Cell], Int)](initial -> 1)(nextGrid.tupled)
       .metered(250.milliseconds)
       .map(gridToImage.tupled)
       .map(Image.compile)
