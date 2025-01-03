@@ -63,9 +63,9 @@ final case class Grid[A: ClassTag] private (cells: Array[Array[A]]) {
 
 object Grid {
 
-  def of[A: ClassTag](width: Int, height: Int, empty: => A) =
+  def of[A: ClassTag](width: Int, height: Int, default: => A)(insertAtCoords: PartialFunction[(Int, Int), A]) =
     Array
-      .fill(height, width)(empty)
+      .tabulate(height, width)((y, x) => insertAtCoords.applyOrElse((x, y), (_, _) => default))
       .pipe(Grid.apply)
 
   private[model] def withOffsetIndex[A](xOffset: Int, yOffset: Int)(

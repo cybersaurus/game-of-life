@@ -24,38 +24,40 @@ object GridSpec extends weaver.FunSuite with GridFixtures {
 
   test("zipWithIndex adds grid coordinates to all elements") {
     val expectedGrid: Grid[(Int, (Int, Int))] = Grid
-      .of(width = 3, height = 4, empty = (0, -1 -> -1))
-      .setAt(x = 0, y = 0, cell = (1, 0 -> 0))
-      .setAt(x = 1, y = 0, cell = (2, 1 -> 0))
-      .setAt(x = 2, y = 0, cell = (3, 2 -> 0))
-      .setAt(x = 0, y = 1, cell = (4, 0 -> 1))
-      .setAt(x = 1, y = 1, cell = (5, 1 -> 1))
-      .setAt(x = 2, y = 1, cell = (6, 2 -> 1))
-      .setAt(x = 0, y = 2, cell = (7, 0 -> 2))
-      .setAt(x = 1, y = 2, cell = (8, 1 -> 2))
-      .setAt(x = 2, y = 2, cell = (9, 2 -> 2))
-      .setAt(x = 0, y = 3, cell = (10, 0 -> 3))
-      .setAt(x = 1, y = 3, cell = (11, 1 -> 3))
-      .setAt(x = 2, y = 3, cell = (12, 2 -> 3))
+      .of(width = 3, height = 4, default = (0, -1 -> -1)) {
+        case (0, 0) => (1, 0 -> 0)
+        case (1, 0) => (2, 1 -> 0)
+        case (2, 0) => (3, 2 -> 0)
+        case (0, 1) => (4, 0 -> 1)
+        case (1, 1) => (5, 1 -> 1)
+        case (2, 1) => (6, 2 -> 1)
+        case (0, 2) => (7, 0 -> 2)
+        case (1, 2) => (8, 1 -> 2)
+        case (2, 2) => (9, 2 -> 2)
+        case (0, 3) => (10, 0 -> 3)
+        case (1, 3) => (11, 1 -> 3)
+        case (2, 3) => (12, 2 -> 3)
+      }
 
     expect.eql(expectedGrid, int3x4Grid().zipWithIndex)
   }
 
   test("withOffsetIndex") {
     val expectedGrid: Grid[(Int, (Int, Int))] = Grid
-      .of(width = 3, height = 4, empty = (0, -1 -> -1))
-      .setAt(x = 0, y = 0, cell = (1, 10 -> 20))
-      .setAt(x = 1, y = 0, cell = (2, 11 -> 20))
-      .setAt(x = 2, y = 0, cell = (3, 12 -> 20))
-      .setAt(x = 0, y = 1, cell = (4, 10 -> 21))
-      .setAt(x = 1, y = 1, cell = (5, 11 -> 21))
-      .setAt(x = 2, y = 1, cell = (6, 12 -> 21))
-      .setAt(x = 0, y = 2, cell = (7, 10 -> 22))
-      .setAt(x = 1, y = 2, cell = (8, 11 -> 22))
-      .setAt(x = 2, y = 2, cell = (9, 12 -> 22))
-      .setAt(x = 0, y = 3, cell = (10, 10 -> 23))
-      .setAt(x = 1, y = 3, cell = (11, 11 -> 23))
-      .setAt(x = 2, y = 3, cell = (12, 12 -> 23))
+      .of(width = 3, height = 4, default = (0, -1 -> -1)) {
+        case (0, 0) => (1, 10 -> 20)
+        case (1, 0) => (2, 11 -> 20)
+        case (2, 0) => (3, 12 -> 20)
+        case (0, 1) => (4, 10 -> 21)
+        case (1, 1) => (5, 11 -> 21)
+        case (2, 1) => (6, 12 -> 21)
+        case (0, 2) => (7, 10 -> 22)
+        case (1, 2) => (8, 11 -> 22)
+        case (2, 2) => (9, 12 -> 22)
+        case (0, 3) => (10, 10 -> 23)
+        case (1, 3) => (11, 11 -> 23)
+        case (2, 3) => (12, 12 -> 23)
+      }
 
     expect.eql(expectedGrid.cells, Grid.withOffsetIndex(10, 20)(int3x4Grid().cells))
   }
