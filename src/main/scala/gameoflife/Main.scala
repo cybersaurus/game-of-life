@@ -7,9 +7,11 @@ import doodle.interact.*
 import doodle.interact.syntax.all.*
 import doodle.java2d.*
 import gameoflife.gfx.Square
+import gameoflife.model.shapes.Oscillators
+import gameoflife.model.shapes.Spaceships
+import gameoflife.model.shapes.Still
 import gameoflife.model.Cell
 import gameoflife.model.Grid
-import gameoflife.model.Shapes
 
 import scala.concurrent.duration.*
 
@@ -25,9 +27,16 @@ object Main extends cats.effect.IOApp.Simple {
 
   private val initial: Grid[Cell] =
     Grid
-      .empty(width = 25, height = 25, empty = Cell.Empty)
-      .combine(Shapes.hBlinker, default = Cell.Empty, atX = 1, atY = 1)
-      .combine(Shapes.hBlinker, default = Cell.Empty, atX = 15, atY = 15)
+      .fill(width = 30, height = 30, fill = Cell.Empty)
+      .combine(Oscillators.blinker, default = Cell.Empty, atX = 2, atY = 1)
+      .combine(Oscillators.toad, default = Cell.Empty, atX = 7, atY = 2)
+      .combine(Oscillators.beacon, default = Cell.Empty, atX = 13, atY = 1)
+      .combine(Still.block, default = Cell.Empty, atX = 2, atY = 7)
+      .combine(Still.beehive, default = Cell.Empty, atX = 7, atY = 7)
+      .combine(Still.boat, default = Cell.Empty, atX = 13, atY = 7)
+      .combine(Still.loaf, default = Cell.Empty, atX = 1, atY = 11)
+      .combine(Still.tub, default = Cell.Empty, atX = 7, atY = 12)
+      .combine(Spaceships.glider, default = Cell.Empty, atX = 1, atY = 25)
 
   private val nextGrid: (Grid[Cell], Int) => (Grid[Cell], Int) = (grid, generation) =>
 //    import cats.syntax.show.*
@@ -40,7 +49,7 @@ object Main extends cats.effect.IOApp.Simple {
   override def run: IO[Unit] =
     fs2.Stream
       .iterate[IO, (Grid[Cell], Int)](initial -> 1)(nextGrid.tupled)
-      .metered(250.milliseconds)
+      .metered(200.milliseconds)
       .map(gridToImage.tupled)
       .map(Image.compile)
       .take(50)
