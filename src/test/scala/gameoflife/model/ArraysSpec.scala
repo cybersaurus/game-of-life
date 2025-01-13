@@ -3,7 +3,7 @@ package gameoflife.model
 import Arrays.*
 import Arrays.given
 
-object ArraysSpec extends weaver.FunSuite with GridFixtures {
+object ArraysSpec extends weaver.FunSuite with ArrayGridFixtures {
   test("rotateColsLeft") {
     val expected: Array[Array[Int]] = Array(
       Array(2, 3, 1),

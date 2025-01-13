@@ -3,15 +3,15 @@ package gameoflife.model
 import scala.reflect.ClassTag
 import scala.util.chaining.*
 
-final case class Grid[A: ClassTag] private (cells: Array[Array[A]]) {
+final case class ArrayGrid[A: ClassTag] private (cells: Array[Array[A]]) {
 
   val height: Int = cells.length
   val width: Int = cells(0).length
 
-  override def clone(): Grid[A] = cells.clone().map(row => row.clone()).pipe(Grid.apply)
+  override def clone(): ArrayGrid[A] = cells.clone().map(row => row.clone()).pipe(ArrayGrid.apply)
 
-  def combine(otherGrid: Grid[A], default: A, atX: Int = 0, atY: Int = 0): Grid[A] =
-    Grid.of(
+  def combine(otherGrid: ArrayGrid[A], default: A, atX: Int = 0, atY: Int = 0): ArrayGrid[A] =
+    ArrayGrid.of(
       width = math.max(width, otherGrid.width),
       height = math.max(height, otherGrid.height),
       default
@@ -31,15 +31,15 @@ final case class Grid[A: ClassTag] private (cells: Array[Array[A]]) {
   private def isDefined(x: Int, y: Int): Boolean =
     x >= 0 && y >= 0 && cells.length > y && cells(0).length > x
 
-  def map[B: ClassTag](f: (A, (Int, Int)) => B): Grid[B] =
+  def map[B: ClassTag](f: (A, (Int, Int)) => B): ArrayGrid[B] =
     zipWithIndex.cells
       .map(row => row.map(f.tupled))
-      .pipe(Grid.apply)
+      .pipe(ArrayGrid.apply)
 
-  private[model] def zipWithIndex: Grid[(A, (Int, Int))] =
-    Grid
+  private[model] def zipWithIndex: ArrayGrid[(A, (Int, Int))] =
+    ArrayGrid
       .withOffsetIndex(xOffset = 0, yOffset = 0)(cells)
-      .pipe(Grid.apply)
+      .pipe(ArrayGrid.apply)
 
   def reduce(
       reduceCellsToRow: (A, A) => A,
@@ -68,7 +68,7 @@ final case class Grid[A: ClassTag] private (cells: Array[Array[A]]) {
       row.collect { case (cell, (cx, cy)) if (cx, cy) != (1, 1) => cell }
 
     (rowsAround andThen columnsAround(x))(y)
-      .pipe(Grid.withOffsetIndex(0, 0))
+      .pipe(ArrayGrid.withOffsetIndex(0, 0))
       .map(collectCellsExceptMiddle)
   }
 
@@ -76,15 +76,15 @@ final case class Grid[A: ClassTag] private (cells: Array[Array[A]]) {
     cells.slice(yFrom, yTo + 1).map(_.slice(xFrom, xTo + 1))
 }
 
-object Grid {
+object ArrayGrid {
 
   def fill[A: ClassTag](width: Int, height: Int, fill: => A) =
-    Grid.of(width, height, fill)(PartialFunction.empty)
+    ArrayGrid.of(width, height, fill)(PartialFunction.empty)
 
   def of[A: ClassTag](width: Int, height: Int, fill: => A)(insertAtCoords: PartialFunction[(Int, Int), A]) =
     Array
       .tabulate(height, width)((y, x) => insertAtCoords.applyOrElse((x, y), (_, _) => fill))
-      .pipe(Grid.apply)
+      .pipe(ArrayGrid.apply)
 
   private[model] def withOffsetIndex[A](xOffset: Int, yOffset: Int)(
       subcells: Array[Array[A]]
@@ -99,16 +99,16 @@ object Grid {
   import Arrays.given
   import Eqs.*
 
-  given [A: Eq]: Eq[Grid[A]] =
+  given [A: Eq]: Eq[ArrayGrid[A]] =
     Eq.all(
       Eq.by(_.height),
       Eq.by(_.width),
       Eq.by(_.cells)
     )
 
-  given [A: Show]: Show[Grid[A]] =
+  given [A: Show]: Show[ArrayGrid[A]] =
     Show.show(_.cells.show)
 
-  extension [A: Show](grid: Grid[A])
-    def debug(prefix: String): Grid[A] = grid.tap(_ => println(s"$prefix: [${grid.show}]"))
+  extension [A: Show](grid: ArrayGrid[A])
+    def debug(prefix: String): ArrayGrid[A] = grid.tap(_ => println(s"$prefix: [${grid.show}]"))
 }

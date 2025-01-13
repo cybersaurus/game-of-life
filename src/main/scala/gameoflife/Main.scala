@@ -7,10 +7,10 @@ import doodle.interact.*
 import doodle.interact.syntax.all.*
 import doodle.java2d.*
 import gameoflife.gfx.Square
-import gameoflife.model.shapes.Oscillators
-import gameoflife.model.shapes.Spaceships
-import gameoflife.model.shapes.Still
-import gameoflife.model.Grid
+import gameoflife.model.shapes.array.Oscillators
+import gameoflife.model.shapes.array.Spaceships
+import gameoflife.model.shapes.array.Still
+import gameoflife.model.ArrayGrid
 import gameoflife.model.State
 
 import scala.concurrent.duration.*
@@ -22,13 +22,13 @@ object Main extends cats.effect.IOApp.Simple {
     case State.Empty => Square.empty
   }
 
-  private val gridToImage: (Grid[State], Int) => Image = (grid, generation) =>
+  private val gridToImage: (ArrayGrid[State], Int) => Image = (grid, generation) =>
     grid.map { case (cell, (_, _)) => chooseSquare(cell) }.reduce(_ beside _, _ above _) above Image.text(
       s"Generation: $generation"
     )
 
-  private val initial: Grid[State] =
-    Grid
+  private val initial: ArrayGrid[State] =
+    ArrayGrid
       .fill(width = 30, height = 30, fill = State.Empty)
       .combine(Oscillators.blinker, default = State.Empty, atX = 2, atY = 1)
       .combine(Oscillators.toad, default = State.Empty, atX = 7, atY = 2)
@@ -40,7 +40,7 @@ object Main extends cats.effect.IOApp.Simple {
       .combine(Still.tub, default = State.Empty, atX = 7, atY = 12)
       .combine(Spaceships.glider, default = State.Empty, atX = 1, atY = 25)
 
-  private val nextGrid: (Grid[State], Int) => (Grid[State], Int) = (grid, generation) =>
+  private val nextGrid: (ArrayGrid[State], Int) => (ArrayGrid[State], Int) = (grid, generation) =>
 //    import cats.syntax.show.*
 //    import scala.util.chaining.*
     (gameoflife.model.GridOfCells.tick(grid), generation + 1)
@@ -50,7 +50,7 @@ object Main extends cats.effect.IOApp.Simple {
 
   override def run: IO[Unit] =
     fs2.Stream
-      .iterate[IO, (Grid[State], Int)](initial -> 1)(nextGrid.tupled)
+      .iterate[IO, (ArrayGrid[State], Int)](initial -> 1)(nextGrid.tupled)
       .metered(200.milliseconds)
       .map(gridToImage.tupled)
       .map(Image.compile)
