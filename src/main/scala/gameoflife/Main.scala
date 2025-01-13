@@ -23,7 +23,9 @@ object Main extends cats.effect.IOApp.Simple {
   }
 
   private val gridToImage: (Grid[Cell], Int) => Image = (grid, generation) =>
-    grid.map(chooseSquare).reduce(_ beside _, _ above _) above Image.text(s"Generation: $generation")
+    grid.map { case (cell, (_, _)) => chooseSquare(cell) }.reduce(_ beside _, _ above _) above Image.text(
+      s"Generation: $generation"
+    )
 
   private val initial: Grid[Cell] =
     Grid

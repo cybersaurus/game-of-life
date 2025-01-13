@@ -17,13 +17,13 @@ object GridOfCells {
     }
 
   def tick(grid: Grid[Cell]): Grid[Cell] =
-    grid.zipWithIndex
+    grid
       .map { case (cell, (x, y)) =>
-        grid.zipWithIndex
+        grid
           .neighbours(x, y)
 //          .debug(s">>>>> neighbours ($x,$y)")
           .flatten
-          .count { case (cell, (_, _)) => cell == Alive }
+          .count(_ == Alive)
           .pipe { count =>
             cell match {
               case Alive if Set(2, 3).contains(count) => Alive

@@ -31,12 +31,12 @@ final case class Grid[A: ClassTag] private (cells: Array[Array[A]]) {
   private def isDefined(x: Int, y: Int): Boolean =
     x >= 0 && y >= 0 && cells.length > y && cells(0).length > x
 
-  def map[B: ClassTag](f: A => B): Grid[B] =
-    cells
-      .map(row => row.map(f))
+  def map[B: ClassTag](f: (A, (Int, Int)) => B): Grid[B] =
+    zipWithIndex.cells
+      .map(row => row.map(f.tupled))
       .pipe(Grid.apply)
 
-  def zipWithIndex: Grid[(A, (Int, Int))] =
+  private[model] def zipWithIndex: Grid[(A, (Int, Int))] =
     Grid
       .withOffsetIndex(xOffset = 0, yOffset = 0)(cells)
       .pipe(Grid.apply)

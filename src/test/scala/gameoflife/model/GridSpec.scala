@@ -13,7 +13,7 @@ object GridSpec extends weaver.FunSuite with GridFixtures {
   test("map applies supplied function to all elements") {
     val expectedGrid: Grid[Int] = increasingGrid(width = 3, height = 4, inc = 2)
 
-    expect.eql(expectedGrid, int3x4Grid().map(_ * 2))
+    expect.eql(expectedGrid, int3x4Grid().map { case (i, (_, _)) => i * 2 })
   }
 
   test("zipWithIndex adds grid coordinates to all elements") {
