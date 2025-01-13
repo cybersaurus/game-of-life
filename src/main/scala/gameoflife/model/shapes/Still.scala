@@ -1,52 +1,52 @@
 package gameoflife.model.shapes
 
-import gameoflife.model.Cell
 import gameoflife.model.Grid
+import gameoflife.model.State
 
 object Still {
-  val block: Grid[Cell] =
+  val block: Grid[State] =
     Grid
-      .fill(width = 2, height = 2, fill = Cell.Alive)
+      .fill(width = 2, height = 2, fill = State.Alive)
 
-  val beehive: Grid[Cell] =
+  val beehive: Grid[State] =
     Grid
-      .of(width = 4, height = 3, fill = Cell.Empty) {
-        case (1, 0) => Cell.Alive
-        case (2, 0) => Cell.Alive
-        case (0, 1) => Cell.Alive
-        case (3, 1) => Cell.Alive
-        case (1, 2) => Cell.Alive
-        case (2, 2) => Cell.Alive
+      .of(width = 4, height = 3, fill = State.Empty) {
+        case (1, 0) => State.Alive
+        case (2, 0) => State.Alive
+        case (0, 1) => State.Alive
+        case (3, 1) => State.Alive
+        case (1, 2) => State.Alive
+        case (2, 2) => State.Alive
       }
 
-  val loaf: Grid[Cell] =
+  val loaf: Grid[State] =
     Grid
-      .of(width = 4, height = 4, fill = Cell.Empty) {
-        case (1, 0) => Cell.Alive
-        case (2, 0) => Cell.Alive
-        case (0, 1) => Cell.Alive
-        case (3, 1) => Cell.Alive
-        case (1, 2) => Cell.Alive
-        case (3, 2) => Cell.Alive
-        case (2, 3) => Cell.Alive
+      .of(width = 4, height = 4, fill = State.Empty) {
+        case (1, 0) => State.Alive
+        case (2, 0) => State.Alive
+        case (0, 1) => State.Alive
+        case (3, 1) => State.Alive
+        case (1, 2) => State.Alive
+        case (3, 2) => State.Alive
+        case (2, 3) => State.Alive
       }
 
-  val boat: Grid[Cell] =
+  val boat: Grid[State] =
     Grid
-      .of(width = 3, height = 3, fill = Cell.Empty) {
-        case (0, 0) => Cell.Alive
-        case (1, 0) => Cell.Alive
-        case (0, 1) => Cell.Alive
-        case (2, 1) => Cell.Alive
-        case (1, 2) => Cell.Alive
+      .of(width = 3, height = 3, fill = State.Empty) {
+        case (0, 0) => State.Alive
+        case (1, 0) => State.Alive
+        case (0, 1) => State.Alive
+        case (2, 1) => State.Alive
+        case (1, 2) => State.Alive
       }
 
-  val tub: Grid[Cell] =
+  val tub: Grid[State] =
     Grid
-      .of(width = 3, height = 3, fill = Cell.Empty) {
-        case (1, 0) => Cell.Alive
-        case (0, 1) => Cell.Alive
-        case (2, 1) => Cell.Alive
-        case (1, 2) => Cell.Alive
+      .of(width = 3, height = 3, fill = State.Empty) {
+        case (1, 0) => State.Alive
+        case (0, 1) => State.Alive
+        case (2, 1) => State.Alive
+        case (1, 2) => State.Alive
       }
 }

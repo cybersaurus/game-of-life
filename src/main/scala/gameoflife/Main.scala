@@ -10,37 +10,37 @@ import gameoflife.gfx.Square
 import gameoflife.model.shapes.Oscillators
 import gameoflife.model.shapes.Spaceships
 import gameoflife.model.shapes.Still
-import gameoflife.model.Cell
 import gameoflife.model.Grid
+import gameoflife.model.State
 
 import scala.concurrent.duration.*
 
 object Main extends cats.effect.IOApp.Simple {
 
-  private val chooseSquare: Cell => Square = {
-    case Cell.Alive => Square.alive
-    case Cell.Empty => Square.empty
+  private val chooseSquare: State => Square = {
+    case State.Alive => Square.alive
+    case State.Empty => Square.empty
   }
 
-  private val gridToImage: (Grid[Cell], Int) => Image = (grid, generation) =>
+  private val gridToImage: (Grid[State], Int) => Image = (grid, generation) =>
     grid.map { case (cell, (_, _)) => chooseSquare(cell) }.reduce(_ beside _, _ above _) above Image.text(
       s"Generation: $generation"
     )
 
-  private val initial: Grid[Cell] =
+  private val initial: Grid[State] =
     Grid
-      .fill(width = 30, height = 30, fill = Cell.Empty)
-      .combine(Oscillators.blinker, default = Cell.Empty, atX = 2, atY = 1)
-      .combine(Oscillators.toad, default = Cell.Empty, atX = 7, atY = 2)
-      .combine(Oscillators.beacon, default = Cell.Empty, atX = 13, atY = 1)
-      .combine(Still.block, default = Cell.Empty, atX = 2, atY = 7)
-      .combine(Still.beehive, default = Cell.Empty, atX = 7, atY = 7)
-      .combine(Still.boat, default = Cell.Empty, atX = 13, atY = 7)
-      .combine(Still.loaf, default = Cell.Empty, atX = 1, atY = 11)
-      .combine(Still.tub, default = Cell.Empty, atX = 7, atY = 12)
-      .combine(Spaceships.glider, default = Cell.Empty, atX = 1, atY = 25)
+      .fill(width = 30, height = 30, fill = State.Empty)
+      .combine(Oscillators.blinker, default = State.Empty, atX = 2, atY = 1)
+      .combine(Oscillators.toad, default = State.Empty, atX = 7, atY = 2)
+      .combine(Oscillators.beacon, default = State.Empty, atX = 13, atY = 1)
+      .combine(Still.block, default = State.Empty, atX = 2, atY = 7)
+      .combine(Still.beehive, default = State.Empty, atX = 7, atY = 7)
+      .combine(Still.boat, default = State.Empty, atX = 13, atY = 7)
+      .combine(Still.loaf, default = State.Empty, atX = 1, atY = 11)
+      .combine(Still.tub, default = State.Empty, atX = 7, atY = 12)
+      .combine(Spaceships.glider, default = State.Empty, atX = 1, atY = 25)
 
-  private val nextGrid: (Grid[Cell], Int) => (Grid[Cell], Int) = (grid, generation) =>
+  private val nextGrid: (Grid[State], Int) => (Grid[State], Int) = (grid, generation) =>
 //    import cats.syntax.show.*
 //    import scala.util.chaining.*
     (gameoflife.model.GridOfCells.tick(grid), generation + 1)
@@ -50,7 +50,7 @@ object Main extends cats.effect.IOApp.Simple {
 
   override def run: IO[Unit] =
     fs2.Stream
-      .iterate[IO, (Grid[Cell], Int)](initial -> 1)(nextGrid.tupled)
+      .iterate[IO, (Grid[State], Int)](initial -> 1)(nextGrid.tupled)
       .metered(200.milliseconds)
       .map(gridToImage.tupled)
       .map(Image.compile)

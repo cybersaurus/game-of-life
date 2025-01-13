@@ -20,16 +20,16 @@ trait GridFixtures {
       (((x + 1) + (y * width)) * inc) + offset
     }
 
-  val hBlinker5x5: Grid[Cell] =
+  val hBlinker5x5: Grid[State] =
     Grid
-      .fill(width = 5, height = 5, fill = Cell.Empty)
-      .combine(Oscillators.blinker, default = Cell.Empty, atX = 1, atY = 1)
+      .fill(width = 5, height = 5, fill = State.Empty)
+      .combine(Oscillators.blinker, default = State.Empty, atX = 1, atY = 1)
 
-  val vBlinker5x5: Grid[Cell] =
+  val vBlinker5x5: Grid[State] =
     Grid
-      .of(width = 5, height = 5, fill = Cell.Empty) {
-        case (2, 1) => Cell.Alive
-        case (2, 2) => Cell.Alive
-        case (2, 3) => Cell.Alive
+      .of(width = 5, height = 5, fill = State.Empty) {
+        case (2, 1) => State.Alive
+        case (2, 2) => State.Alive
+        case (2, 3) => State.Alive
       }
 }

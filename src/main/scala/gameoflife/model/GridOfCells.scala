@@ -1,7 +1,7 @@
 package gameoflife.model
 
-import gameoflife.model.Cell.Alive
-import gameoflife.model.Cell.Empty
+import gameoflife.model.State.Alive
+import gameoflife.model.State.Empty
 
 import scala.annotation.tailrec
 import scala.util.chaining.*
@@ -9,14 +9,14 @@ import scala.util.chaining.*
 object GridOfCells {
 
   @tailrec
-  def ticks(grid: Grid[Cell], count: Int = 1): Grid[Cell] =
+  def ticks(grid: Grid[State], count: Int = 1): Grid[State] =
     count match {
       case 0     => grid
       case 1     => tick(grid)
       case other => ticks(tick(grid), other - 1)
     }
 
-  def tick(grid: Grid[Cell]): Grid[Cell] =
+  def tick(grid: Grid[State]): Grid[State] =
     grid
       .map { case (cell, (x, y)) =>
         grid
