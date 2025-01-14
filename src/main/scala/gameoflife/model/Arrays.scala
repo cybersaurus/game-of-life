@@ -21,17 +21,5 @@ object Arrays {
   extension [A: ClassTag: Show](twoDimArray: Array[Array[A]]) {
     def debug(prefix: String): Array[Array[A]] =
       twoDimArray.tap(arr => println(s"$prefix: [${arr.show}]"))
-
-    def rotateRowsUp: Array[Array[A]] =
-      twoDimArray.drop(1) ++ twoDimArray.take(1)
-
-    def rotateRowsDown: Array[Array[A]] =
-      twoDimArray.takeRight(1) ++ twoDimArray.dropRight(1)
-
-    def rotateColsLeft: Array[Array[A]] =
-      twoDimArray.map { row => row.drop(1) ++ row.take(1) }
-
-    def rotateColsRight: Array[Array[A]] =
-      twoDimArray.map { row => row.takeRight(1) ++ row.dropRight(1) }
   }
 }

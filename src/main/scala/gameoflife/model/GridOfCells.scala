@@ -21,7 +21,6 @@ object GridOfCells {
       .map { case (cell, (x, y)) =>
         grid
           .neighbours(x, y)
-//          .debug(s">>>>> neighbours ($x,$y)")
           .flatten
           .count(_ == Alive)
           .pipe { count =>
