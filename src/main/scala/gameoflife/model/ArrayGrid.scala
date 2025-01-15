@@ -8,8 +8,6 @@ final case class ArrayGrid[A: ClassTag] private (cells: Array[Array[A]]) {
   val height: Int = cells.length
   val width: Int = cells(0).length
 
-  override def clone(): ArrayGrid[A] = cells.clone().map(row => row.clone()).pipe(ArrayGrid.apply)
-
   def combine(otherGrid: ArrayGrid[A], default: A, atX: Int = 0, atY: Int = 0): ArrayGrid[A] =
     ArrayGrid.of(
       width = math.max(width, otherGrid.width),
