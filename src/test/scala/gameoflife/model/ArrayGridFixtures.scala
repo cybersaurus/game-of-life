@@ -4,7 +4,9 @@ import cats.Eq
 import gameoflife.model.shapes.array.Oscillators
 
 trait ArrayGridFixtures {
-  given arrayEq[A: Eq]: Eq[Array[A]] = Arrays.arrayEq
+  protected given arrayEq[A: Eq]: Eq[Array[A]] = Arrays.arrayEq
+
+  protected given gridEq[A: Eq]: Eq[Grid[A]] = Eq.by(_.asInstanceOf[ArrayGrid[A]])
 
   protected final def emptyInt3x4Grid(
       insertAtCoords: PartialFunction[(Int, Int), Int] = PartialFunction.empty

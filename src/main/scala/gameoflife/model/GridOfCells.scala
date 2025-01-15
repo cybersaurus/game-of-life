@@ -9,14 +9,14 @@ import scala.util.chaining.*
 object GridOfCells {
 
   @tailrec
-  def ticks(grid: ArrayGrid[State], count: Int = 1): ArrayGrid[State] =
+  def ticks(grid: Grid[State], count: Int = 1): Grid[State] =
     count match {
       case 0     => grid
       case 1     => tick(grid)
       case other => ticks(tick(grid), other - 1)
     }
 
-  def tick(grid: ArrayGrid[State]): ArrayGrid[State] =
+  def tick(grid: Grid[State]): Grid[State] =
     grid
       .map { case (cell, (x, y)) =>
         grid
