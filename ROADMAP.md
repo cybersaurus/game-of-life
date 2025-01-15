@@ -1,7 +1,7 @@
 
 #### TODO
 - [x] Implement simple Grid backed by 2D Array 
-- [ ] README linking to GoL docs
+- [x] README linking to GoL docs
 - [x] ArrayGrid impl + Grid trait
     - [x] Add docs to each class
 - [ ] Shapes enum based on 2d Array
