@@ -65,6 +65,10 @@ object ArrayGridSpec extends weaver.FunSuite with ArrayGridFixtures {
     expect.eql(expected, int3x4Grid().slice(xFrom = 1, xTo = 2, yFrom = 1, yTo = 2))
   }
 
+  test("neighboursCount") {
+    expect.eql(4, int3x4Grid().neighboursCount(1, 1)(cell => cell % 2 == 0))
+  }
+
   test("neighbours of middle/middle cell on 3x3 grid") {
     val expected: Array[Array[Int]] = Array(
       Array(1, 2, 3),
@@ -153,7 +157,7 @@ object ArrayGridSpec extends weaver.FunSuite with ArrayGridFixtures {
     expect.eql(expected, shape.combine(empty10x10, default = 0))
   }
 
-  test("combine empty grid with offset shape".only) {
+  test("combine empty grid with offset shape") {
     val empty10x10: ArrayGrid[Int] = ArrayGrid.of(width = 10, height = 10, fill = 0)(PartialFunction.empty)
 
     val shape: ArrayGrid[Int] = ArrayGrid.of(width = 3, height = 3, fill = 0) {

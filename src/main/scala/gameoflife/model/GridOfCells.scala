@@ -20,9 +20,7 @@ object GridOfCells {
     grid
       .map { case (cell, (x, y)) =>
         grid
-          .neighbours(x, y)
-          .flatten
-          .count(_ == Alive)
+          .neighboursCount(x, y)(_ == Alive)
           .pipe { count =>
             cell match {
               case Alive if Set(2, 3).contains(count) => Alive

@@ -49,7 +49,9 @@ final case class ArrayGrid[A: ClassTag] private (cells: Array[Array[A]]) {
       .map(row => row.reduce(reduceCellsToRow))
       .reduce(reduceRowsToResult)
 
-  def neighbours(x: Int, y: Int): Array[Array[A]] = {
+  def neighboursCount(x: Int, y: Int)(pred: A => Boolean): Int = neighbours(x, y).flatten.count(pred)
+
+  private[model] def neighbours(x: Int, y: Int): Array[Array[A]] = {
     def rowsAround(y: Int): Array[Array[A]] =
       y match {
         case y if y == 0          => Array(cells(height - 1), cells(y), cells(y + 1))
