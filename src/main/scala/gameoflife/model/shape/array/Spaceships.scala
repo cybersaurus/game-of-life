@@ -1,4 +1,4 @@
-package gameoflife.model.shapes.array
+package gameoflife.model.shape.array
 
 import gameoflife.model.ArrayGrid
 import gameoflife.model.State

@@ -1,7 +1,7 @@
 package gameoflife.model
 
 import cats.Eq
-import gameoflife.model.shapes.array.Oscillators
+import gameoflife.model.shape.array.Oscillators
 
 trait ArrayGridFixtures {
   protected given arrayEq[A: Eq]: Eq[Array[A]] = Arrays.arrayEq
