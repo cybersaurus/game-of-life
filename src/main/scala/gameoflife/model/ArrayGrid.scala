@@ -29,12 +29,14 @@ final case class ArrayGrid[A: ClassTag] private (cells: Array[Array[A]]) extends
       }
     }
 
-  def getCellAt(x: Int, y: Int): Option[A] = Option.when(isDefined(x, y))(cellAt(x, y))
+  override def getCellAt(x: Int, y: Int): Option[A] = {
+    def isDefined(x: Int, y: Int): Boolean =
+      x >= 0 && y >= 0 && cells.length > y && cells(0).length > x
 
-  private def cellAt(x: Int, y: Int): A = cells(y)(x)
+    def cellAt(x: Int, y: Int): A = cells(y)(x)
 
-  private def isDefined(x: Int, y: Int): Boolean =
-    x >= 0 && y >= 0 && cells.length > y && cells(0).length > x
+    Option.when(isDefined(x, y))(cellAt(x, y))
+  }
 
   override def map[B: ClassTag](f: (A, (Int, Int)) => B): Grid[B] =
     zipWithIndex.cells
