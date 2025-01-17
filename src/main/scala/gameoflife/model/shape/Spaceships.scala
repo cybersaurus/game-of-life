@@ -1,6 +1,5 @@
-package gameoflife.model.shape.array
+package gameoflife.model.shape
 
-import gameoflife.model.shape.Shape
 import gameoflife.model.State
 
 object Spaceships {

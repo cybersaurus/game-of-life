@@ -2,7 +2,7 @@ package gameoflife.model
 
 import cats.syntax.eq.*
 import cats.Eq
-import gameoflife.model.shape.array.Oscillators
+import gameoflife.model.shape.Oscillators
 
 import Eqs.*
 

@@ -7,9 +7,9 @@ import doodle.interact.*
 import doodle.interact.syntax.all.*
 import doodle.java2d.*
 import gameoflife.gfx.Square
-import gameoflife.model.shape.array.Oscillators
-import gameoflife.model.shape.array.Spaceships
-import gameoflife.model.shape.array.Still
+import gameoflife.model.shape.Oscillators
+import gameoflife.model.shape.Spaceships
+import gameoflife.model.shape.Still
 import gameoflife.model.ArrayGrid
 import gameoflife.model.Grid
 import gameoflife.model.State
