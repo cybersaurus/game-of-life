@@ -12,9 +12,18 @@ case class Shape[A: ClassTag](cells: Array[Array[A]]) {
   def getCellAt(x: Int, y: Int): Option[A] = cells.getCellAt(x, y)
 
   def map[B: ClassTag](f: (A, (Int, Int)) => B): Shape[B] = cells.mapWithCoords(f).pipe(Shape.apply)
+
+  def flipHorizontally: Shape[A] = cells.map(_.reverse).pipe(Shape.apply)
+  def flipVertically: Shape[A] = cells.reverse.pipe(Shape.apply)
 }
 
 object Shape {
+  import cats.syntax.show.toShow
+  import cats.Show
+  import gameoflife.model.Arrays.given
+
+  given [A: Show]: Show[Shape[A]] = Show.show(_.cells.show)
+
   def fill[A: ClassTag](width: Int, height: Int, fill: => A) =
     Shape.of(width, height, fill)(PartialFunction.empty)
 

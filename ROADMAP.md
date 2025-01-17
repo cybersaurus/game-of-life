@@ -6,7 +6,7 @@
     - [x] Add docs to each class
 - [x] Shapes based on 2d Array
     - [x] Add to any Grid impl
-    - [ ] Flip Shapes
+    - [x] Flip Shapes
     - [ ] Rotate Shapes
     - [ ] Plus config describing the enums
 - [ ] MapGrid, Coords class as key

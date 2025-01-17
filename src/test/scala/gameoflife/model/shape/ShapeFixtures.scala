@@ -12,5 +12,6 @@ trait ShapeFixtures extends ArraysFixtures {
       Eq.by(_.cells)
     )
 
-  protected val increasingIntsShape: Shape[Int] = Shape.of(width = 2, height = 5, fill = 0)(increasingInts(width = 2))
+  protected val increasingInts3x4Shape: Shape[Int] =
+    Shape.of(width = 3, height = 4, fill = 0)(increasingInts(width = 3))
 }
