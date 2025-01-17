@@ -31,7 +31,7 @@ object Main extends cats.effect.IOApp.Simple {
 
   private val initial: Grid[State] =
     ArrayGrid
-      .fill(width = 30, height = 30, fill = State.Empty)
+      .fill(width = 30, height = 40, fill = State.Empty)
       .add(Oscillators.blinker, default = State.Empty, atX = 2, atY = 1)
       .add(Oscillators.toad, default = State.Empty, atX = 7, atY = 2)
       .add(Oscillators.beacon, default = State.Empty, atX = 13, atY = 1)
@@ -41,6 +41,9 @@ object Main extends cats.effect.IOApp.Simple {
       .add(Still.loaf, default = State.Empty, atX = 1, atY = 11)
       .add(Still.tub, default = State.Empty, atX = 7, atY = 12)
       .add(Spaceships.glider, default = State.Empty, atX = 1, atY = 25)
+      .add(Spaceships.lightweight, default = State.Empty, atX = 15, atY = 19)
+      .add(Spaceships.middleweight, default = State.Empty, atX = 15, atY = 26)
+      .add(Spaceships.heavyweight, default = State.Empty, atX = 15, atY = 33)
 
   private val nextGrid: (Grid[State], Int) => (Grid[State], Int) = (grid, generation) =>
 //    import cats.syntax.show.*
