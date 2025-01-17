@@ -1,5 +1,7 @@
 package gameoflife.model
 
+import gameoflife.model.shape.Shape
+
 object ArrayGridSpec extends weaver.FunSuite with ArrayGridFixtures {
 
   test("getCellAt returns Some(123)") {
@@ -129,20 +131,23 @@ object ArrayGridSpec extends weaver.FunSuite with ArrayGridFixtures {
     expect.eql(expected, int5x5Grid().neighbours(2, 2))
   }
 
-  test("combine two empty grids") {
-    val empty2x5: ArrayGrid[Int] = ArrayGrid.of(width = 2, height = 5, fill = 0)(PartialFunction.empty)
-    val empty4x3: ArrayGrid[Int] = ArrayGrid.of(width = 4, height = 3, fill = 0)(PartialFunction.empty)
+  test("add empty shape") {
+    val emptyGrid2x5: ArrayGrid[Int] = ArrayGrid.of(width = 2, height = 5, fill = 0)(PartialFunction.empty)
+    val emptyGrid4x3: ArrayGrid[Int] = ArrayGrid.of(width = 4, height = 3, fill = 0)(PartialFunction.empty)
+
+    val emptyShape2x5: Shape[Int] = Shape.of(width = 2, height = 5, fill = 0)(PartialFunction.empty)
+    val emptyShape4x3: Shape[Int] = Shape.of(width = 4, height = 3, fill = 0)(PartialFunction.empty)
 
     val expected: ArrayGrid[Int] = ArrayGrid.of(width = 4, height = 5, fill = 0)(PartialFunction.empty)
 
-    expect.eql(expected, empty2x5.combine(empty4x3, default = 0)) &&
-    expect.eql(expected, empty4x3.combine(empty2x5, default = 0))
+    expect.eql(expected, emptyGrid2x5.add(emptyShape4x3, default = 0)) &&
+    expect.eql(expected, emptyGrid4x3.add(emptyShape2x5, default = 0))
   }
 
-  test("combine empty grid with shape") {
+  test("add shape to empty grid") {
     val empty10x10: ArrayGrid[Int] = ArrayGrid.of(width = 10, height = 10, fill = 0)(PartialFunction.empty)
 
-    val shape: ArrayGrid[Int] = ArrayGrid.of(width = 5, height = 5, fill = 0) {
+    val shape: Shape[Int] = Shape.of(width = 5, height = 5, fill = 0) {
       case (1, 2) => 10
       case (2, 2) => 20
       case (3, 2) => 30
@@ -153,14 +158,13 @@ object ArrayGridSpec extends weaver.FunSuite with ArrayGridFixtures {
       case (3, 2) => 30
     }
 
-    expect.eql(expected, empty10x10.combine(shape, default = 0)) &&
-    expect.eql(expected, shape.combine(empty10x10, default = 0))
+    expect.eql(expected, empty10x10.add(shape, default = 0))
   }
 
-  test("combine empty grid with offset shape") {
+  test("add shape with offset to empty grid") {
     val empty10x10: ArrayGrid[Int] = ArrayGrid.of(width = 10, height = 10, fill = 0)(PartialFunction.empty)
 
-    val shape: ArrayGrid[Int] = ArrayGrid.of(width = 3, height = 3, fill = 0) {
+    val shape: Shape[Int] = Shape.of(width = 3, height = 3, fill = 0) {
       case (0, 1) => 10
       case (1, 1) => 20
       case (2, 1) => 30
@@ -171,6 +175,6 @@ object ArrayGridSpec extends weaver.FunSuite with ArrayGridFixtures {
       case (6, 6) => 30
     }
 
-    expect.eql(expected, empty10x10.combine(shape, default = 0, atX = 4, atY = 5))
+    expect.eql(expected, empty10x10.add(shape, default = 0, atX = 4, atY = 5))
   }
 }

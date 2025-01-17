@@ -25,7 +25,7 @@ trait ArrayGridFixtures {
   val hBlinker5x5: ArrayGrid[State] =
     ArrayGrid
       .fill(width = 5, height = 5, fill = State.Empty)
-      .combine(Oscillators.blinker, default = State.Empty, atX = 1, atY = 1)
+      .add(Oscillators.blinker, default = State.Empty, atX = 1, atY = 1)
 
   val vBlinker5x5: ArrayGrid[State] =
     ArrayGrid

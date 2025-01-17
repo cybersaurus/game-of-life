@@ -1,11 +1,11 @@
 package gameoflife.model.shape.array
 
-import gameoflife.model.ArrayGrid
+import gameoflife.model.shape.Shape
 import gameoflife.model.State
 
 object Spaceships {
-  val glider: ArrayGrid[State] =
-    ArrayGrid
+  val glider: Shape[State] =
+    Shape
       .of(width = 3, height = 3, fill = State.Empty) {
         case (1, 0) => State.Alive
         case (2, 0) => State.Alive

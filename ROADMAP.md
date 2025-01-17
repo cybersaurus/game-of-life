@@ -4,8 +4,10 @@
 - [x] README linking to GoL docs
 - [x] ArrayGrid impl + Grid trait
     - [x] Add docs to each class
-- [ ] Shapes enum based on 2d Array
-    - [ ] Add to any Grid impl
+- [x] Shapes based on 2d Array
+    - [x] Add to any Grid impl
+    - [ ] Flip Shapes
+    - [ ] Rotate Shapes
     - [ ] Plus config describing the enums
 - [ ] MapGrid, Coords class as key
     - [ ] Filter to purge dead cells from previous iteration

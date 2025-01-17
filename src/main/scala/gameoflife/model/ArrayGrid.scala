@@ -1,5 +1,7 @@
 package gameoflife.model
 
+import gameoflife.model.shape.Shape
+
 import scala.reflect.ClassTag
 import scala.util.chaining.*
 
@@ -15,13 +17,13 @@ final case class ArrayGrid[A: ClassTag] private (cells: Array[Array[A]]) extends
   override val height: Int = cells.length
   override val width: Int = cells(0).length
 
-  def combine(otherGrid: ArrayGrid[A], default: A, atX: Int = 0, atY: Int = 0): ArrayGrid[A] =
+  override def add(shape: Shape[A], default: A, atX: Int = 0, atY: Int = 0): ArrayGrid[A] =
     ArrayGrid.of(
-      width = math.max(width, otherGrid.width),
-      height = math.max(height, otherGrid.height),
+      width = math.max(width, shape.width),
+      height = math.max(height, shape.height),
       default
     ) { (x, y) =>
-      (this.getCellAt(x, y), otherGrid.getCellAt(x - atX, y - atY)) match {
+      (this.getCellAt(x, y), shape.getCellAt(x - atX, y - atY)) match {
         case (None, Some(otherCell))       => otherCell
         case (Some(cell), None)            => cell
         case (Some(cell), Some(otherCell)) => if otherCell == default then cell else otherCell

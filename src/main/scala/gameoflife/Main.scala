@@ -32,15 +32,15 @@ object Main extends cats.effect.IOApp.Simple {
   private val initial: Grid[State] =
     ArrayGrid
       .fill(width = 30, height = 30, fill = State.Empty)
-      .combine(Oscillators.blinker, default = State.Empty, atX = 2, atY = 1)
-      .combine(Oscillators.toad, default = State.Empty, atX = 7, atY = 2)
-      .combine(Oscillators.beacon, default = State.Empty, atX = 13, atY = 1)
-      .combine(Still.block, default = State.Empty, atX = 2, atY = 7)
-      .combine(Still.beehive, default = State.Empty, atX = 7, atY = 7)
-      .combine(Still.boat, default = State.Empty, atX = 13, atY = 7)
-      .combine(Still.loaf, default = State.Empty, atX = 1, atY = 11)
-      .combine(Still.tub, default = State.Empty, atX = 7, atY = 12)
-      .combine(Spaceships.glider, default = State.Empty, atX = 1, atY = 25)
+      .add(Oscillators.blinker, default = State.Empty, atX = 2, atY = 1)
+      .add(Oscillators.toad, default = State.Empty, atX = 7, atY = 2)
+      .add(Oscillators.beacon, default = State.Empty, atX = 13, atY = 1)
+      .add(Still.block, default = State.Empty, atX = 2, atY = 7)
+      .add(Still.beehive, default = State.Empty, atX = 7, atY = 7)
+      .add(Still.boat, default = State.Empty, atX = 13, atY = 7)
+      .add(Still.loaf, default = State.Empty, atX = 1, atY = 11)
+      .add(Still.tub, default = State.Empty, atX = 7, atY = 12)
+      .add(Spaceships.glider, default = State.Empty, atX = 1, atY = 25)
 
   private val nextGrid: (Grid[State], Int) => (Grid[State], Int) = (grid, generation) =>
 //    import cats.syntax.show.*

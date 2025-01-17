@@ -1,5 +1,7 @@
 package gameoflife.model
 
+import gameoflife.model.shape.Shape
+
 import scala.reflect.ClassTag
 
 trait Grid[A: ClassTag] {
@@ -16,4 +18,6 @@ trait Grid[A: ClassTag] {
       reduceCellsToRow: (A, A) => A,
       reduceRowsToResult: (A, A) => A
   ): A
+
+  def add(shape: Shape[A], default: A, atX: Int = 0, atY: Int = 0): Grid[A]
 }
