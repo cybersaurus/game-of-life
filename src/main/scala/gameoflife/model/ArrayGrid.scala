@@ -5,6 +5,8 @@ import gameoflife.model.shape.Shape
 import scala.reflect.ClassTag
 import scala.util.chaining.*
 
+import Arrays.*
+
 /** Simple implementation of Grid, backed by a two-dimensional Array.
   *
   * @param cells
@@ -31,23 +33,11 @@ final case class ArrayGrid[A: ClassTag] private (cells: Array[Array[A]]) extends
       }
     }
 
-  override def getCellAt(x: Int, y: Int): Option[A] = {
-    def isDefined(x: Int, y: Int): Boolean =
-      x >= 0 && y >= 0 && cells.length > y && cells(0).length > x
-
-    def cellAt(x: Int, y: Int): A = cells(y)(x)
-
-    Option.when(isDefined(x, y))(cellAt(x, y))
-  }
+  override def getCellAt(x: Int, y: Int): Option[A] = cells.getCellAt(x, y)
 
   override def map[B: ClassTag](f: (A, (Int, Int)) => B): Grid[B] =
-    zipWithIndex.cells
-      .map(row => row.map(f.tupled))
-      .pipe(ArrayGrid.apply)
-
-  private[model] def zipWithIndex: ArrayGrid[(A, (Int, Int))] =
-    ArrayGrid
-      .withOffsetIndex(xOffset = 0, yOffset = 0)(cells)
+    cells
+      .mapWithCoords(f)
       .pipe(ArrayGrid.apply)
 
   override def reduce(
@@ -79,7 +69,7 @@ final case class ArrayGrid[A: ClassTag] private (cells: Array[Array[A]]) extends
       row.collect { case (cell, (cx, cy)) if (cx, cy) != (1, 1) => cell }
 
     (rowsAround andThen columnsAround(x))(y)
-      .pipe(ArrayGrid.withOffsetIndex(0, 0))
+      .pipe(_.zipWithCoords())
       .map(collectCellsExceptMiddle)
   }
 
@@ -88,6 +78,12 @@ final case class ArrayGrid[A: ClassTag] private (cells: Array[Array[A]]) extends
 }
 
 object ArrayGrid {
+  import cats.syntax.show.toShow
+  import cats.Show
+
+  import Arrays.given
+
+  given [A: Show]: Show[ArrayGrid[A]] = Show.show(_.cells.show)
 
   def fill[A: ClassTag](width: Int, height: Int, fill: => A) =
     ArrayGrid.of(width, height, fill)(PartialFunction.empty)
@@ -96,29 +92,6 @@ object ArrayGrid {
     Array
       .tabulate(height, width)((y, x) => insertAtCoords.applyOrElse((x, y), (_, _) => fill))
       .pipe(ArrayGrid.apply)
-
-  private[model] def withOffsetIndex[A](xOffset: Int, yOffset: Int)(
-      subcells: Array[Array[A]]
-  ): Array[Array[(A, (Int, Int))]] =
-    subcells.zipWithIndex
-      .map((row, y) => row.zipWithIndex.map { (cell, x) => (cell, (x + xOffset) -> (y + yOffset)) })
-
-  import cats.syntax.show.toShow
-  import cats.Eq
-  import cats.Show
-
-  import Arrays.given
-  import Eqs.*
-
-  given [A: Eq]: Eq[ArrayGrid[A]] =
-    Eq.all(
-      Eq.by(_.height),
-      Eq.by(_.width),
-      Eq.by(_.cells)
-    )
-
-  given [A: Show]: Show[ArrayGrid[A]] =
-    Show.show(_.cells.show)
 
   extension [A: Show](grid: ArrayGrid[A])
     def debug(prefix: String): ArrayGrid[A] = grid.tap(_ => println(s"$prefix: [${grid.show}]"))

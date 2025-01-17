@@ -18,46 +18,6 @@ object ArrayGridSpec extends weaver.FunSuite with ArrayGridFixtures {
     expect.eql(expectedGrid, int3x4Grid().map { case (i, (_, _)) => i * 2 })
   }
 
-  test("zipWithIndex adds grid coordinates to all elements") {
-    val expectedGrid: ArrayGrid[(Int, (Int, Int))] = ArrayGrid
-      .of(width = 3, height = 4, fill = (0, -1 -> -1)) {
-        case (0, 0) => (1, 0 -> 0)
-        case (1, 0) => (2, 1 -> 0)
-        case (2, 0) => (3, 2 -> 0)
-        case (0, 1) => (4, 0 -> 1)
-        case (1, 1) => (5, 1 -> 1)
-        case (2, 1) => (6, 2 -> 1)
-        case (0, 2) => (7, 0 -> 2)
-        case (1, 2) => (8, 1 -> 2)
-        case (2, 2) => (9, 2 -> 2)
-        case (0, 3) => (10, 0 -> 3)
-        case (1, 3) => (11, 1 -> 3)
-        case (2, 3) => (12, 2 -> 3)
-      }
-
-    expect.eql(expectedGrid, int3x4Grid().zipWithIndex)
-  }
-
-  test("withOffsetIndex") {
-    val expectedGrid: ArrayGrid[(Int, (Int, Int))] = ArrayGrid
-      .of(width = 3, height = 4, fill = (0, -1 -> -1)) {
-        case (0, 0) => (1, 10 -> 20)
-        case (1, 0) => (2, 11 -> 20)
-        case (2, 0) => (3, 12 -> 20)
-        case (0, 1) => (4, 10 -> 21)
-        case (1, 1) => (5, 11 -> 21)
-        case (2, 1) => (6, 12 -> 21)
-        case (0, 2) => (7, 10 -> 22)
-        case (1, 2) => (8, 11 -> 22)
-        case (2, 2) => (9, 12 -> 22)
-        case (0, 3) => (10, 10 -> 23)
-        case (1, 3) => (11, 11 -> 23)
-        case (2, 3) => (12, 12 -> 23)
-      }
-
-    expect.eql(expectedGrid.cells, ArrayGrid.withOffsetIndex(10, 20)(int3x4Grid().cells))
-  }
-
   test("slice") {
     val expected: Array[Array[Int]] = Array(
       Array(5, 6),

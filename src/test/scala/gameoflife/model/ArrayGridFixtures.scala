@@ -1,12 +1,26 @@
 package gameoflife.model
 
+import cats.syntax.eq.*
 import cats.Eq
 import gameoflife.model.shape.array.Oscillators
 
-trait ArrayGridFixtures {
-  protected given arrayEq[A: Eq]: Eq[Array[A]] = Arrays.arrayEq
+import Eqs.*
 
-  protected given gridEq[A: Eq]: Eq[Grid[A]] = Eq.by(_.asInstanceOf[ArrayGrid[A]])
+trait ArrayGridFixtures {
+  given [A: Eq]: Eq[Array[A]] =
+    Eq.and(
+      Eq.by(_.length),
+      Eq.instance((arr1, arr2) => arr1.corresponds(arr2.iterator)(_ === _))
+    )
+
+  protected given [A: Eq]: Eq[ArrayGrid[A]] =
+    Eq.all(
+      Eq.by(_.height),
+      Eq.by(_.width),
+      Eq.by(_.cells)
+    )
+
+  protected given [A: Eq]: Eq[Grid[A]] = Eq.by(_.asInstanceOf[ArrayGrid[A]])
 
   protected final def emptyInt3x4Grid(
       insertAtCoords: PartialFunction[(Int, Int), Int] = PartialFunction.empty
