@@ -14,10 +14,5 @@ trait Grid[A: ClassTag] {
 
   def neighboursCount(x: Int, y: Int)(pred: A => Boolean): Int
 
-  def reduce(
-      reduceCellsToRow: (A, A) => A,
-      reduceRowsToResult: (A, A) => A
-  ): A
-
   def add(shape: Shape[A], default: A, atX: Int = 0, atY: Int = 0): Grid[A]
 }

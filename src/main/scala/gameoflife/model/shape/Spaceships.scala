@@ -43,7 +43,6 @@ object Spaceships {
         case (2, 4) => State.Alive
       }
 
-
   val heavyweight: Shape[State] =
     Shape
       .of(width = 7, height = 4, fill = State.Empty) {

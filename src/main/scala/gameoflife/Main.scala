@@ -2,6 +2,8 @@ package gameoflife
 
 import cats.effect.IO
 import cats.implicits.*
+import cats.Foldable
+import cats.Monoid
 import doodle.image.Image
 import doodle.interact.*
 import doodle.interact.syntax.all.*
@@ -15,19 +17,18 @@ import gameoflife.model.Grid
 import gameoflife.model.State
 
 import scala.concurrent.duration.*
+import scala.util.chaining.*
 
 object Main extends cats.effect.IOApp.Simple {
 
-  private val chooseSquare: State => Square = {
-    case State.Alive => Square.alive
-    case State.Empty => Square.empty
-  }
-
-  private val gridToImage: (Grid[State], Int) => Image = (grid, generation) =>
-    grid
-      .map { case (cell, (_, _)) => chooseSquare(cell) }
-      .reduce(_ beside _, _ above _)
-      .above(Image.text(s"Generation: $generation"))
+  override def run: IO[Unit] =
+    fs2.Stream
+      .iterate[IO, (Grid[State], Int)](initial -> 1)(nextGrid.tupled)
+      .metered(100.milliseconds)
+      .map(reduceGridToImage)
+      .map(Image.compile)
+      .take(250)
+      .animateToIO(Frame.default.withTitle("Game of Life"))
 
   private val initial: Grid[State] =
     ArrayGrid
@@ -46,19 +47,30 @@ object Main extends cats.effect.IOApp.Simple {
       .add(Spaceships.heavyweight, default = State.Empty, atX = 15, atY = 33)
 
   private val nextGrid: (Grid[State], Int) => (Grid[State], Int) = (grid, generation) =>
-//    import cats.syntax.show.*
-//    import scala.util.chaining.*
     (gameoflife.model.GridOfCells.tick(grid), generation + 1)
-//      .tap { case (newGrid: Grid[Cell], newGen: Int) =>
-//        println(s"Gen: [$newGen], old: [${grid.show}], new: [${newGrid.show}]")
-//      }
 
-  override def run: IO[Unit] =
-    fs2.Stream
-      .iterate[IO, (Grid[State], Int)](initial -> 1)(nextGrid.tupled)
-      .metered(200.milliseconds)
-      .map(gridToImage.tupled)
-      .map(Image.compile)
-      .take(50)
-      .animateToIO(Frame.default.withTitle("Game of Life"))
+  private def reduceGridToImage(grid: Grid[State], generation: Int): Image = {
+    given imagesBeside: Monoid[Image] = Monoid.instance(
+      emptyValue = Image.Elements.Empty,
+      cmb = _ beside _
+    )
+
+    given imagesAbove: Monoid[Image] = Monoid.instance(
+      emptyValue = Image.Elements.Empty,
+      cmb = _ above _
+    )
+
+    val getStateAt: (Int, Int) => State = (y, x) => grid.getCellAt(x, y).getOrElse(State.Empty)
+
+    val chooseSquare: State => Square = {
+      case State.Alive => Square.alive
+      case State.Empty => Square.empty
+    }
+
+    List
+      .tabulate[State](grid.height, grid.width)(getStateAt)
+      .map(row => Foldable[List].foldMap(row)(chooseSquare)(using imagesBeside))
+      .pipe(rows => Foldable[List].fold(rows)(using imagesAbove))
+      .above(Image.text(s"Generation: $generation"))
+  }
 }
