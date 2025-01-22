@@ -12,7 +12,6 @@ import gameoflife.gfx.Square
 import gameoflife.model.shape.Oscillators
 import gameoflife.model.shape.Spaceships
 import gameoflife.model.shape.Still
-import gameoflife.model.ArrayGrid
 import gameoflife.model.Grid
 import gameoflife.model.State
 
@@ -20,6 +19,8 @@ import scala.concurrent.duration.*
 import scala.util.chaining.*
 
 object Main extends cats.effect.IOApp.Simple {
+
+  import gameoflife.model.GridOfCells.given
 
   override def run: IO[Unit] =
     fs2.Stream
@@ -30,9 +31,12 @@ object Main extends cats.effect.IOApp.Simple {
       .take(250)
       .animateToIO(Frame.default.withTitle("Game of Life"))
 
+  private val grid: Grid[State] =
+//    gameoflife.model.ArrayGrid.fill(width = 30, height = 40, fill = State.Empty)
+    gameoflife.model.MapGrid.empty[State](width = 30, height = 40)
+
   private val initial: Grid[State] =
-    ArrayGrid
-      .fill(width = 30, height = 40, fill = State.Empty)
+    grid
       .add(Oscillators.blinker, default = State.Empty, atX = 2, atY = 1)
       .add(Oscillators.toad, default = State.Empty, atX = 7, atY = 2)
       .add(Oscillators.beacon, default = State.Empty, atX = 13, atY = 1)
@@ -46,8 +50,20 @@ object Main extends cats.effect.IOApp.Simple {
       .add(Spaceships.middleweight, default = State.Empty, atX = 15, atY = 26)
       .add(Spaceships.heavyweight, default = State.Empty, atX = 15, atY = 33)
 
+  // TODO: Add debug method
   private val nextGrid: (Grid[State], Int) => (Grid[State], Int) = (grid, generation) =>
+//    import cats.syntax.show.toShow
+//    import scala.util.chaining.*
+//    import gameoflife.model.MapGrid.given
+//    import State.given_Show_State
+
+//    given cats.Show[Grid[State]] = gameoflife.model.MapGrid.gridShow[State]
+//    given cats.Show[Grid[State]] = gameoflife.model.ArrayGrid.gridShow[State]
+
     (gameoflife.model.GridOfCells.tick(grid), generation + 1)
+//      .tap { case (newGrid: Grid[State], newGen: Int) =>
+//        println(s"Gen: [$newGen], old: [${grid.show}], new: [${newGrid.show}]")
+//      }
 
   private def reduceGridToImage(grid: Grid[State], generation: Int): Image = {
     given imagesBeside: Monoid[Image] = Monoid.instance(

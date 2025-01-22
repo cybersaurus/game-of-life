@@ -7,6 +7,7 @@ import scala.annotation.tailrec
 import scala.util.chaining.*
 
 object GridOfCells {
+  given Empty[State] = gameoflife.model.Empty.of(State.Empty)
 
   @tailrec
   def ticks(grid: Grid[State], count: Int = 1): Grid[State] =
