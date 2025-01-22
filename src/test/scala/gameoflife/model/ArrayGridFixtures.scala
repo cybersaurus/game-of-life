@@ -15,7 +15,7 @@ trait ArrayGridFixtures { self: GridSpec =>
       Eq.by(_.cells)
     )
 
-  override final protected def gridEquals[A: Eq]: Eq[Grid[A]] = Eq.by(_.asInstanceOf[ArrayGrid[A]])
+  override final protected given gridEquals[A: Eq]: Eq[Grid[A]] = Eq.by(_.asInstanceOf[ArrayGrid[A]])
 
   override final protected val emptyGrid2x5: Grid[Int] =
     ArrayGrid.of(width = 2, height = 5, fill = 0)(PartialFunction.empty)
@@ -41,7 +41,7 @@ trait ArrayGridFixtures { self: GridSpec =>
     }
 }
 object ArrayGridFixtures {
-  given arrayEq[A: Eq]: Eq[Array[A]] = ArraysFixtures.arrayEq
+  import ArraysFixtures.arrayEq
 
   given [A: Eq]: Eq[ArrayGrid[A]] =
     Eq.all(

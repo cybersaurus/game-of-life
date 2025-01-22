@@ -13,7 +13,7 @@ final case class MapGrid[A: ClassTag: Empty] private (
     cells: Map[(Int, Int), A]
 ) extends Grid[A] {
 
-  override given gridShow[A: Show]: Show[Grid[A]] = Show.show(_.asInstanceOf[MapGrid[A]].cells.show)
+  override protected final given gridShow[A: Show]: Show[Grid[A]] = Show.show(_.asInstanceOf[MapGrid[A]].cells.show)
 
   private val empty: A = summon[Empty[A]].empty
 

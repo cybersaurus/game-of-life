@@ -10,7 +10,7 @@ trait Grid[A: ClassTag: Empty] {
   val height: Int
   val width: Int
 
-  given gridShow[A: Show]: Show[Grid[A]]
+  protected given gridShow[A: Show]: Show[Grid[A]]
 
   def getCellAt(x: Int, y: Int): Option[A]
 

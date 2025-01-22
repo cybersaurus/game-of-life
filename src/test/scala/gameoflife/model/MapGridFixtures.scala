@@ -12,7 +12,7 @@ trait MapGridFixtures { self: GridSpec =>
       Eq.by(_.cells)
     )
 
-  override final protected def gridEquals[A: Eq]: Eq[Grid[A]] = Eq.by(_.asInstanceOf[MapGrid[A]])
+  override final protected given gridEquals[A: Eq]: Eq[Grid[A]] = Eq.by(_.asInstanceOf[MapGrid[A]])
 
   override final protected val emptyGrid2x5: Grid[Int] =
     MapGrid.empty(width = 2, height = 5)

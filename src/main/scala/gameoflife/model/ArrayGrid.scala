@@ -22,7 +22,7 @@ final case class ArrayGrid[A: ClassTag: Empty] private (cells: Array[Array[A]]) 
   override val height: Int = cells.length
   override val width: Int = cells(0).length
 
-  override given gridShow[A: Show]: Show[Grid[A]] = Show.show(_.asInstanceOf[ArrayGrid[A]].cells.show)
+  override protected final given gridShow[A: Show]: Show[Grid[A]] = Show.show(_.asInstanceOf[ArrayGrid[A]].cells.show)
 
   override def add(shape: Shape[A], default: A, atX: Int = 0, atY: Int = 0): ArrayGrid[A] =
     ArrayGrid.of(

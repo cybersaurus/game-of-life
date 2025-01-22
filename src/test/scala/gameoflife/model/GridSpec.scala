@@ -5,9 +5,7 @@ import gameoflife.model.shape.Shape
 
 protected abstract class GridSpec extends weaver.FunSuite {
 
-  protected def gridEquals[A: Eq]: Eq[Grid[A]]
-
-  protected given [A: Eq]: Eq[Grid[A]] = gridEquals
+  protected given gridEquals[A: Eq]: Eq[Grid[A]]
 
   protected val emptyGrid2x5: Grid[Int]
   protected val emptyGrid4x3: Grid[Int]
@@ -31,9 +29,6 @@ protected abstract class GridSpec extends weaver.FunSuite {
   }
 
   test("map applies supplied function to all elements") {
-    // TODO: Remove?
-    import Empty.given_Empty_Int
-
     val expectedGrid: Grid[Int] = increasingGrid(width = 3, height = 4, inc = 2)
 
     expect.eql(expectedGrid, int3x4Grid.map { case (i, (_, _)) => i * 2 })
