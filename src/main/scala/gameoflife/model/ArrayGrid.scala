@@ -1,5 +1,7 @@
 package gameoflife.model
 
+import cats.syntax.show.toShow
+import cats.Show
 import gameoflife.model.shape.Shape
 
 import scala.reflect.ClassTag
@@ -15,9 +17,12 @@ import Arrays.*
   *   the type of value stored in the ArrayGrid
   */
 final case class ArrayGrid[A: ClassTag: Empty] private (cells: Array[Array[A]]) extends Grid[A] {
+  import Arrays.given
 
   override val height: Int = cells.length
   override val width: Int = cells(0).length
+
+  override given gridShow[A: Show]: Show[Grid[A]] = Show.show(_.asInstanceOf[ArrayGrid[A]].cells.show)
 
   override def add(shape: Shape[A], default: A, atX: Int = 0, atY: Int = 0): ArrayGrid[A] =
     ArrayGrid.of(
@@ -42,14 +47,6 @@ final case class ArrayGrid[A: ClassTag: Empty] private (cells: Array[Array[A]]) 
 }
 
 object ArrayGrid {
-  import cats.syntax.show.toShow
-  import cats.Show
-
-  import Arrays.given
-
-  private given [A: Show]: Show[ArrayGrid[A]] = Show.show(_.cells.show)
-  given gridShow[A: Show]: Show[Grid[A]] = Show.show(_.asInstanceOf[ArrayGrid[A]].show)
-
   def fill[A: ClassTag: Empty](width: Int, height: Int, fill: => A) =
     ArrayGrid.of(width, height, fill)(PartialFunction.empty)
 
@@ -57,7 +54,4 @@ object ArrayGrid {
     Array
       .tabulate(height, width)((y, x) => insertAtCoords.applyOrElse((x, y), (_, _) => fill))
       .pipe(ArrayGrid.apply)
-
-  extension [A: Show](grid: ArrayGrid[A])
-    def debug(prefix: String): ArrayGrid[A] = grid.tap(_ => println(s"$prefix: [${grid.show}]"))
 }

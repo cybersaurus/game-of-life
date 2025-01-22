@@ -13,6 +13,7 @@ import gameoflife.model.shape.Oscillators
 import gameoflife.model.shape.Spaceships
 import gameoflife.model.shape.Still
 import gameoflife.model.Grid
+import gameoflife.model.Grid.*
 import gameoflife.model.State
 
 import scala.concurrent.duration.*
@@ -50,20 +51,8 @@ object Main extends cats.effect.IOApp.Simple {
       .add(Spaceships.middleweight, default = State.Empty, atX = 15, atY = 26)
       .add(Spaceships.heavyweight, default = State.Empty, atX = 15, atY = 33)
 
-  // TODO: Add debug method
   private val nextGrid: (Grid[State], Int) => (Grid[State], Int) = (grid, generation) =>
-//    import cats.syntax.show.toShow
-//    import scala.util.chaining.*
-//    import gameoflife.model.MapGrid.given
-//    import State.given_Show_State
-
-//    given cats.Show[Grid[State]] = gameoflife.model.MapGrid.gridShow[State]
-//    given cats.Show[Grid[State]] = gameoflife.model.ArrayGrid.gridShow[State]
-
-    (gameoflife.model.GridOfCells.tick(grid), generation + 1)
-//      .tap { case (newGrid: Grid[State], newGen: Int) =>
-//        println(s"Gen: [$newGen], old: [${grid.show}], new: [${newGrid.show}]")
-//      }
+    (gameoflife.model.GridOfCells.tick(grid.debug("Before")).debug("After"), generation + 1)
 
   private def reduceGridToImage(grid: Grid[State], generation: Int): Image = {
     given imagesBeside: Monoid[Image] = Monoid.instance(

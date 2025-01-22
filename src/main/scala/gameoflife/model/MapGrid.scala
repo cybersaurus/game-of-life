@@ -1,5 +1,7 @@
 package gameoflife.model
 
+import cats.syntax.show.toShow
+import cats.Show
 import gameoflife.model.shape.Shape
 
 import scala.reflect.ClassTag
@@ -10,6 +12,8 @@ final case class MapGrid[A: ClassTag: Empty] private (
     override val height: Int,
     cells: Map[(Int, Int), A]
 ) extends Grid[A] {
+
+  override given gridShow[A: Show]: Show[Grid[A]] = Show.show(_.asInstanceOf[MapGrid[A]].cells.show)
 
   private val empty: A = summon[Empty[A]].empty
 
@@ -43,14 +47,6 @@ final case class MapGrid[A: ClassTag: Empty] private (
 }
 
 object MapGrid {
-  import cats.syntax.show.toShow
-  import cats.Show
-
-//  private given Show[Map[_, _]] = Show.show(m => m.mkString(""))
-
-  private given [A: Show]: Show[MapGrid[A]] = Show.show(_.cells.show)
-  given gridShow[A: Show]: Show[Grid[A]] = Show.show(_.asInstanceOf[MapGrid[A]].show)
-
   def empty[A: ClassTag: Empty](width: Int = 0, height: Int = 0): MapGrid[A] =
     of(width, height)(Map.empty)
 

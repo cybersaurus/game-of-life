@@ -1,5 +1,6 @@
 package gameoflife.model
 
+import cats.Show
 import gameoflife.model.shape.Shape
 
 import scala.reflect.ClassTag
@@ -8,6 +9,8 @@ import scala.util.chaining.*
 trait Grid[A: ClassTag: Empty] {
   val height: Int
   val width: Int
+
+  given gridShow[A: Show]: Show[Grid[A]]
 
   def getCellAt(x: Int, y: Int): Option[A]
 
@@ -37,6 +40,10 @@ trait Grid[A: ClassTag: Empty] {
   protected[model] def lower(y: Int): Int = if y < height - 1 then y + 1 else 0
   protected[model] def left(x: Int): Int = if x > 0 then x - 1 else width - 1
   protected[model] def right(x: Int): Int = if x < width - 1 then x + 1 else 0
+}
+object Grid {
+  extension [A: cats.Show](grid: Grid[A])
+    def debug(prefix: String): Grid[A] = grid.tap(_ => println(s"$prefix: [${grid.gridShow.show(grid)}]"))
 }
 
 trait Empty[A] {
