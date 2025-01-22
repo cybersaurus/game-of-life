@@ -1,4 +1,4 @@
-package gameoflife.model
+package gameoflife.util
 
 import cats.Eq
 

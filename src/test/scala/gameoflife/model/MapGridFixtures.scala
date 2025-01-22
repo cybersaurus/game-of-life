@@ -1,8 +1,7 @@
 package gameoflife.model
 
 import cats.Eq
-
-import Eqs.*
+import gameoflife.util.Eqs.*
 
 trait MapGridFixtures { self: GridSpec =>
 

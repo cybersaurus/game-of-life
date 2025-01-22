@@ -2,7 +2,7 @@ package gameoflife.model.shape
 
 import cats.Eq
 import gameoflife.model.ArraysFixtures
-import gameoflife.model.Eqs.*
+import gameoflife.util.Eqs.*
 
 trait ShapeFixtures extends ArraysFixtures {
   protected given [A: Eq]: Eq[Shape[A]] =

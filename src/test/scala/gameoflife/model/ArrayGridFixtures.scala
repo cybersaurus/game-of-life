@@ -1,9 +1,9 @@
 package gameoflife.model
 
 import cats.Eq
+import gameoflife.util.Eqs.*
 
 import Empty.given_Empty_Int
-import Eqs.*
 
 trait ArrayGridFixtures { self: GridSpec =>
   protected given arrayEq[A: Eq]: Eq[Array[A]] = ArraysFixtures.arrayEq
