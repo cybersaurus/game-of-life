@@ -9,7 +9,8 @@
     - [x] Flip Shapes
     - [ ] Rotate Shapes
     - [ ] Plus config describing the enums
-- [ ] MapGrid, Coords class as key
+- [x] MapGrid
+    - [ ] Coords class as key
     - [ ] Filter to purge dead cells from previous iteration
 - [ ] Concurrency
 - [ ] Performance metrics for ArrayGrid vs MapGrid

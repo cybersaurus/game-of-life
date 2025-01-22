@@ -1,4 +1,4 @@
-package gameoflife
+package gameoflife.main
 
 import cats.effect.IO
 import cats.implicits.*
@@ -13,28 +13,22 @@ import gameoflife.model.shape.Oscillators
 import gameoflife.model.shape.Spaceships
 import gameoflife.model.shape.Still
 import gameoflife.model.Grid
-import gameoflife.model.Grid.*
 import gameoflife.model.State
 
 import scala.concurrent.duration.*
 import scala.util.chaining.*
 
-object Main extends cats.effect.IOApp.Simple {
+abstract class Main extends cats.effect.IOApp.Simple {
+  protected lazy val grid: Grid[State]
 
-  import gameoflife.model.GridOfCells.given
-
-  override def run: IO[Unit] =
+  override final def run: IO[Unit] =
     fs2.Stream
       .iterate[IO, (Grid[State], Int)](initial -> 1)(nextGrid.tupled)
       .metered(100.milliseconds)
       .map(reduceGridToImage)
       .map(Image.compile)
       .take(250)
-      .animateToIO(Frame.default.withTitle("Game of Life"))
-
-  private val grid: Grid[State] =
-//    gameoflife.model.ArrayGrid.fill(width = 30, height = 40, fill = State.Empty)
-    gameoflife.model.MapGrid.empty[State](width = 30, height = 40)
+      .animateToIO(Frame.default.withTitle(s"Game of Life - ${this.getClass.getSimpleName}"))
 
   private val initial: Grid[State] =
     grid
@@ -52,7 +46,7 @@ object Main extends cats.effect.IOApp.Simple {
       .add(Spaceships.heavyweight, default = State.Empty, atX = 15, atY = 33)
 
   private val nextGrid: (Grid[State], Int) => (Grid[State], Int) = (grid, generation) =>
-    (gameoflife.model.GridOfCells.tick(grid.debug("Before")).debug("After"), generation + 1)
+    (gameoflife.model.GridOfCells.tick(grid), generation + 1)
 
   private def reduceGridToImage(grid: Grid[State], generation: Int): Image = {
     given imagesBeside: Monoid[Image] = Monoid.instance(
